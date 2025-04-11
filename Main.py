@@ -14,7 +14,7 @@ def analisar_requisicao(conteudoRequisicao):
     nomes_produtos = resultadosSite.select('span.txtTit2')
     preco_produtos = resultadosSite.select('span.valor')
 
-    nome_e = tratamento_dados(nome_estabelecimento, "String")
+    nome_e = tratamento_dados(nome_estabelecimento.text, "String")
     cnpj_e = tratamento_dados(cnpj_estabelecimento.text, "String")
 
     produtos = []
@@ -28,7 +28,7 @@ def analisar_requisicao(conteudoRequisicao):
 
     nota_fiscal = {
         'nome_estabelecimento': nome_e,
-        'cnpj': cnpj_e.replace("\n\t\t", " "),
+        'cnpj': cnpj_e.replace("\n\t\t    ", " "),
         'produtos': produtos
     }
 
