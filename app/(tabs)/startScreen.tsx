@@ -1,3 +1,4 @@
+import { router } from "expo-router";
 import React from "react";
 import {
   Dimensions,
@@ -14,18 +15,23 @@ const { width, height } = Dimensions.get("window");
 
 const StartScreen: React.FC = () => {
   const handleLogin = () => {
-    // Handle login navigation
+    // Navigate to login screen
     console.log("Navigate to login");
+    // router.push('/loginScreen');
   };
 
   const handleRegister = () => {
-    // Handle register navigation
-    console.log("Navigate to register");
+    // Navigate to signup screen
+    router.push("/(tabs)/signupScreen");
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#F8F9FA" />
+      <StatusBar
+        barStyle="dark-content"
+        backgroundColor="#F8F9FA"
+        translucent={false}
+      />
 
       {/* Main content */}
       <View style={styles.content}>
@@ -34,7 +40,7 @@ const StartScreen: React.FC = () => {
           <View style={styles.logoWrapper}>
             {}
             <Image
-              source={require("@/assets/images/gentracker-logo.png")} // You'll replace this path
+              source={require("@/assets/images/gentracker-logo.png")}
               style={styles.logoImage}
               resizeMode="contain"
             />
@@ -78,16 +84,16 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    marginTop: -50, // Adjust to match screenshot positioning
+    marginTop: -50,
   },
   logoWrapper: {
     alignItems: "center",
     justifyContent: "center",
   },
   logoImage: {
-    width: 280, // Adjust width based on your logo dimensions
-    height: 80, // Adjust height based on your logo dimensions
-    maxWidth: width * 0.8, // Responsive max width
+    width: 280,
+    height: 80,
+    maxWidth: width * 0.8,
   },
   buttonsContainer: {
     paddingBottom: 60,
@@ -130,6 +136,16 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
     letterSpacing: 0.2,
+  },
+  bottomIndicator: {
+    alignItems: "center",
+    paddingBottom: 20,
+  },
+  indicatorLine: {
+    width: 80,
+    height: 4,
+    backgroundColor: "#D1D5DB",
+    borderRadius: 2,
   },
 });
 
