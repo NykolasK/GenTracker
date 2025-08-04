@@ -1,4 +1,4 @@
-# 🛒 GenFinder
+# 🛒 GenTracker
 
 **Aplicativo mobile para criação de listas de compras e monitoramento de preços com base em notas fiscais eletrônicas.**
 
@@ -6,8 +6,8 @@
 
 ## 📱 Sobre o projeto
 
-O **GenFinder** é uma aplicação mobile desenvolvida com o objetivo de ajudar consumidores a **organizar suas compras**, **monitorar preços** e **economizar** de forma prática e eficiente.  
-Diferente de soluções que utilizam bases de dados online genéricas, o GenFinder se destaca por **ler o QR Code das notas fiscais eletrônicas** emitidas nas compras dos próprios usuários.
+O **GenTracker** é uma aplicação mobile desenvolvida com o objetivo de ajudar consumidores a **organizar suas compras**, **monitorar preços** e **economizar** de forma prática e eficiente.  
+Diferente de soluções que utilizam bases de dados online genéricas, o GenTracker se destaca por **ler o QR Code das notas fiscais eletrônicas** emitidas nas compras dos próprios usuários.
 
 A partir dessas informações reais e personalizadas, o aplicativo permite:
 
@@ -43,8 +43,8 @@ O projeto visa **otimizar a experiência de compra em supermercados**, proporcio
 
 1. Clone o repositório:
    ```bash
-   git clone https://github.com/NykolasK/genfinder.git
-   cd genfinder
+   git clone https://github.com/NykolasK/GenTracker.git
+   cd GenTracker
    ```
 
 2. Instale as dependências:
@@ -79,4 +79,4 @@ Desenvolvido com 💙 por **Nykolas Kauan** e **Eliel Rocha**
 
 ---
 
-> **GenFinder** — Mais controle, mais economia, direto da sua nota fiscal.
+> **GenTracker** — Mais controle, mais economia, direto da sua nota fiscal.
