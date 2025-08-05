@@ -16,15 +16,12 @@ import {
 
 const { width } = Dimensions.get("window");
 
-const SignUpScreen: React.FC = () => {
+const LoginScreen: React.FC = () => {
   const [formData, setFormData] = useState({
-    nome: "",
     email: "",
     senha: "",
-    confirmeSenha: "",
   });
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({
@@ -33,20 +30,20 @@ const SignUpScreen: React.FC = () => {
     }));
   };
 
-  const handleSignUp = () => {
-    console.log("Sign up with:", formData);
+  const handleLogin = () => {
+    console.log("Login with:", formData);
   };
 
-  const handleGoogleSignUp = () => {
-    console.log("Sign up with Google");
+  const handleGoogleLogin = () => {
+    console.log("Login with Google");
   };
 
-  const handleFacebookSignUp = () => {
-    console.log("Sign up with Facebook");
+  const handleFacebookLogin = () => {
+    console.log("Login with Facebook");
   };
 
-  const handleLoginNavigation = () => {
-    router.back();
+  const handleRegisterNavigation = () => {
+    router.push("/(tabs)/signupScreen");
   };
 
   return (
@@ -68,23 +65,11 @@ const SignUpScreen: React.FC = () => {
 
         {/* Form section */}
         <View style={styles.formContainer}>
-          {/* Nome field */}
+          {/* Email field */}
           <View style={styles.inputContainer}>
             <TextInput
               style={styles.textInput}
-              placeholder="Nome"
-              placeholderTextColor="#9CA3AF"
-              value={formData.nome}
-              onChangeText={(value) => handleInputChange("nome", value)}
-              autoCapitalize="words"
-            />
-          </View>
-
-          {/* E-mail field */}
-          <View style={styles.inputContainer}>
-            <TextInput
-              style={styles.textInput}
-              placeholder="E-mail"
+              placeholder="Email"
               placeholderTextColor="#9CA3AF"
               value={formData.email}
               onChangeText={(value) => handleInputChange("email", value)}
@@ -116,38 +101,13 @@ const SignUpScreen: React.FC = () => {
             </TouchableOpacity>
           </View>
 
-          {/* Confirme a Senha field */}
-          <View style={styles.inputContainer}>
-            <TextInput
-              style={[styles.textInput, styles.passwordInput]}
-              placeholder="Confirme a Senha"
-              placeholderTextColor="#9CA3AF"
-              value={formData.confirmeSenha}
-              onChangeText={(value) =>
-                handleInputChange("confirmeSenha", value)
-              }
-              secureTextEntry={!showConfirmPassword}
-              autoCapitalize="none"
-            />
-            <TouchableOpacity
-              style={styles.eyeIcon}
-              onPress={() => setShowConfirmPassword(!showConfirmPassword)}
-            >
-              <Ionicons
-                name={showConfirmPassword ? "eye" : "eye-off"}
-                size={20}
-                color="#9CA3AF"
-              />
-            </TouchableOpacity>
-          </View>
-
-          {/* Register button */}
+          {/* Login button */}
           <TouchableOpacity
-            style={styles.registerButton}
-            onPress={handleSignUp}
+            style={styles.loginButton}
+            onPress={handleLogin}
             activeOpacity={0.8}
           >
-            <Text style={styles.registerButtonText}>Registre-se</Text>
+            <Text style={styles.loginButtonText}>Login</Text>
           </TouchableOpacity>
 
           {/* Divider */}
@@ -163,7 +123,7 @@ const SignUpScreen: React.FC = () => {
           <View style={styles.socialButtonsContainer}>
             <TouchableOpacity
               style={styles.googleButton}
-              onPress={handleGoogleSignUp}
+              onPress={handleGoogleLogin}
               activeOpacity={0.8}
             >
               <FontAwesome name="google" size={18} color="#EF4444" />
@@ -172,7 +132,7 @@ const SignUpScreen: React.FC = () => {
 
             <TouchableOpacity
               style={styles.facebookButton}
-              onPress={handleFacebookSignUp}
+              onPress={handleFacebookLogin}
               activeOpacity={0.8}
             >
               <FontAwesome name="facebook" size={18} color="#3B82F6" />
@@ -180,11 +140,13 @@ const SignUpScreen: React.FC = () => {
             </TouchableOpacity>
           </View>
 
-          {/* Login link */}
-          <View style={styles.loginLinkContainer}>
-            <Text style={styles.loginLinkText}>Já tem uma conta? </Text>
-            <TouchableOpacity onPress={handleLoginNavigation}>
-              <Text style={styles.loginLink}>Login</Text>
+          {/* Register link */}
+          <View style={styles.registerLinkContainer}>
+            <Text style={styles.registerLinkText}>
+              Não tem uma conta ainda?{" "}
+            </Text>
+            <TouchableOpacity onPress={handleRegisterNavigation}>
+              <Text style={styles.registerLink}>Registrar agora</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -206,7 +168,7 @@ const styles = StyleSheet.create({
   },
   logoContainer: {
     alignItems: "center",
-    marginBottom: 60,
+    marginBottom: 80,
   },
   logoImage: {
     width: 300,
@@ -218,7 +180,7 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   inputContainer: {
-    marginBottom: 16,
+    marginBottom: 20,
     position: "relative",
     width: "100%",
     maxWidth: 350,
@@ -244,14 +206,14 @@ const styles = StyleSheet.create({
     top: 18,
     padding: 4,
   },
-  registerButton: {
+  loginButton: {
     backgroundColor: "#3B82F6",
     borderRadius: 12,
     paddingVertical: 16,
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 8,
-    marginBottom: 32,
+    marginTop: 12,
+    marginBottom: 40,
     width: "100%",
     maxWidth: 350,
     shadowColor: "#3B82F6",
@@ -263,7 +225,7 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 2,
   },
-  registerButtonText: {
+  loginButtonText: {
     color: "#FFFFFF",
     fontSize: 16,
     fontWeight: "600",
@@ -292,7 +254,7 @@ const styles = StyleSheet.create({
     width: "100%",
     maxWidth: 350,
     gap: 12,
-    marginBottom: 32,
+    marginBottom: 40,
   },
   googleButton: {
     flexDirection: "row",
@@ -328,23 +290,23 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: "#3B82F6",
   },
-  loginLinkContainer: {
+  registerLinkContainer: {
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
     paddingBottom: 30,
     flexWrap: "wrap",
   },
-  loginLinkText: {
+  registerLinkText: {
     fontSize: 16,
     color: "#374151",
     textAlign: "center",
   },
-  loginLink: {
+  registerLink: {
     fontSize: 16,
     color: "#3B82F6",
     fontWeight: "600",
   },
 });
 
-export default SignUpScreen;
+export default LoginScreen;

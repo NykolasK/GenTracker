@@ -11,18 +11,17 @@ import {
   View,
 } from "react-native";
 
-const { width, height } = Dimensions.get("window");
+const { width } = Dimensions.get("window");
 
 const StartScreen: React.FC = () => {
   const handleLogin = () => {
     // Navigate to login screen
-    console.log("Navigate to login");
-    // router.push('/loginScreen');
+    router.push("/loginScreen");
   };
 
   const handleRegister = () => {
     // Navigate to signup screen
-    router.push("/(tabs)/signupScreen");
+    router.push("/signupScreen");
   };
 
   return (
@@ -84,7 +83,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    marginTop: -50,
   },
   logoWrapper: {
     alignItems: "center",

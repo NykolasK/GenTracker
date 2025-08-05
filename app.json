@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "GenFinder",
-    "slug": "GenFinder",
+    "name": "GenTracker",
+    "slug": "GenTracker",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "genfinder",
+    "scheme": "gentracker",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {

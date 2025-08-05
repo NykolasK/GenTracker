@@ -15,6 +15,12 @@ export default function RootLayout() {
           headerShown: false,
         }}
       />
+      <Stack.Screen
+        name="loginScreen"
+        options={{
+          headerShown: false,
+        }}
+      />
     </Stack>
   );
 }
