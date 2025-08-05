@@ -1,5 +1,4 @@
 import { router } from "expo-router";
-import React from "react";
 import {
   Dimensions,
   Image,
@@ -13,15 +12,13 @@ import {
 
 const { width } = Dimensions.get("window");
 
-const StartScreen: React.FC = () => {
+export default function StartScreen() {
   const handleLogin = () => {
-    // Navigate to login screen
-    router.push("/loginScreen");
+    router.push("/(auth)/loginScreen");
   };
 
   const handleRegister = () => {
-    // Navigate to signup screen
-    router.push("/signupScreen");
+    router.push("/(auth)/signupScreen");
   };
 
   return (
@@ -32,12 +29,9 @@ const StartScreen: React.FC = () => {
         translucent={false}
       />
 
-      {/* Main content */}
       <View style={styles.content}>
-        {/* Logo section */}
         <View style={styles.logoContainer}>
           <View style={styles.logoWrapper}>
-            {}
             <Image
               source={require("@/assets/images/gentracker-logo.png")}
               style={styles.logoImage}
@@ -46,7 +40,6 @@ const StartScreen: React.FC = () => {
           </View>
         </View>
 
-        {/* Buttons section */}
         <View style={styles.buttonsContainer}>
           <TouchableOpacity
             style={styles.loginButton}
@@ -67,7 +60,7 @@ const StartScreen: React.FC = () => {
       </View>
     </SafeAreaView>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -83,6 +76,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    marginTop: -50,
   },
   logoWrapper: {
     alignItems: "center",
@@ -135,16 +129,4 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     letterSpacing: 0.2,
   },
-  bottomIndicator: {
-    alignItems: "center",
-    paddingBottom: 20,
-  },
-  indicatorLine: {
-    width: 80,
-    height: 4,
-    backgroundColor: "#D1D5DB",
-    borderRadius: 2,
-  },
 });
-
-export default StartScreen;

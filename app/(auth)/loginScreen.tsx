@@ -2,6 +2,8 @@ import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import {
+  ActivityIndicator,
+  Alert,
   Dimensions,
   Image,
   SafeAreaView,
@@ -13,18 +15,17 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { signIn } from "../../services/authService";
 
 const { width } = Dimensions.get("window");
 
-const SignUpScreen: React.FC = () => {
+const LoginScreen: React.FC = () => {
   const [formData, setFormData] = useState({
-    nome: "",
     email: "",
     senha: "",
-    confirmeSenha: "",
   });
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({
@@ -33,20 +34,60 @@ const SignUpScreen: React.FC = () => {
     }));
   };
 
-  const handleSignUp = () => {
-    console.log("Sign up with:", formData);
+  const validateForm = () => {
+    if (!formData.email.trim()) {
+      Alert.alert("Erro", "Por favor, digite seu email");
+      return false;
+    }
+    if (!formData.senha.trim()) {
+      Alert.alert("Erro", "Por favor, digite sua senha");
+      return false;
+    }
+    if (!formData.email.includes("@")) {
+      Alert.alert("Erro", "Por favor, digite um email válido");
+      return false;
+    }
+    return true;
   };
 
-  const handleGoogleSignUp = () => {
-    console.log("Sign up with Google");
+  const handleLogin = async () => {
+    if (!validateForm()) return;
+
+    setLoading(true);
+    try {
+      const result = await signIn(formData.email.trim(), formData.senha);
+
+      if (result.success) {
+        Alert.alert("Sucesso", result.message, [
+          { text: "OK", onPress: () => router.replace("/homeScreen") },
+        ]);
+      } else {
+        Alert.alert("Erro de Login", result.error);
+      }
+    } catch {
+      Alert.alert("Erro", "Ocorreu um erro inesperado. Tente novamente.");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleFacebookSignUp = () => {
-    console.log("Sign up with Facebook");
+  const handleGoogleLogin = () => {
+    Alert.alert("Em breve", "Login com Google será implementado em breve!");
   };
 
-  const handleLoginNavigation = () => {
-    router.back();
+  const handleFacebookLogin = () => {
+    Alert.alert("Em breve", "Login com Facebook será implementado em breve!");
+  };
+
+  const handleRegisterNavigation = () => {
+    router.push("/signupScreen");
+  };
+
+  const handleForgotPassword = () => {
+    Alert.alert(
+      "Recuperar Senha",
+      "Funcionalidade será implementada em breve!"
+    );
   };
 
   return (
@@ -57,7 +98,6 @@ const SignUpScreen: React.FC = () => {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* Logo section */}
         <View style={styles.logoContainer}>
           <Image
             source={require("@/assets/images/gentracker-logo.png")}
@@ -66,34 +106,20 @@ const SignUpScreen: React.FC = () => {
           />
         </View>
 
-        {/* Form section */}
         <View style={styles.formContainer}>
-          {/* Nome field */}
           <View style={styles.inputContainer}>
             <TextInput
               style={styles.textInput}
-              placeholder="Nome"
-              placeholderTextColor="#9CA3AF"
-              value={formData.nome}
-              onChangeText={(value) => handleInputChange("nome", value)}
-              autoCapitalize="words"
-            />
-          </View>
-
-          {/* E-mail field */}
-          <View style={styles.inputContainer}>
-            <TextInput
-              style={styles.textInput}
-              placeholder="E-mail"
+              placeholder="Email"
               placeholderTextColor="#9CA3AF"
               value={formData.email}
               onChangeText={(value) => handleInputChange("email", value)}
               keyboardType="email-address"
               autoCapitalize="none"
+              editable={!loading}
             />
           </View>
 
-          {/* Senha field */}
           <View style={styles.inputContainer}>
             <TextInput
               style={[styles.textInput, styles.passwordInput]}
@@ -103,10 +129,12 @@ const SignUpScreen: React.FC = () => {
               onChangeText={(value) => handleInputChange("senha", value)}
               secureTextEntry={!showPassword}
               autoCapitalize="none"
+              editable={!loading}
             />
             <TouchableOpacity
               style={styles.eyeIcon}
               onPress={() => setShowPassword(!showPassword)}
+              disabled={loading}
             >
               <Ionicons
                 name={showPassword ? "eye" : "eye-off"}
@@ -116,41 +144,27 @@ const SignUpScreen: React.FC = () => {
             </TouchableOpacity>
           </View>
 
-          {/* Confirme a Senha field */}
-          <View style={styles.inputContainer}>
-            <TextInput
-              style={[styles.textInput, styles.passwordInput]}
-              placeholder="Confirme a Senha"
-              placeholderTextColor="#9CA3AF"
-              value={formData.confirmeSenha}
-              onChangeText={(value) =>
-                handleInputChange("confirmeSenha", value)
-              }
-              secureTextEntry={!showConfirmPassword}
-              autoCapitalize="none"
-            />
-            <TouchableOpacity
-              style={styles.eyeIcon}
-              onPress={() => setShowConfirmPassword(!showConfirmPassword)}
-            >
-              <Ionicons
-                name={showConfirmPassword ? "eye" : "eye-off"}
-                size={20}
-                color="#9CA3AF"
-              />
-            </TouchableOpacity>
-          </View>
-
-          {/* Register button */}
           <TouchableOpacity
-            style={styles.registerButton}
-            onPress={handleSignUp}
-            activeOpacity={0.8}
+            style={styles.forgotPassword}
+            onPress={handleForgotPassword}
+            disabled={loading}
           >
-            <Text style={styles.registerButtonText}>Registre-se</Text>
+            <Text style={styles.forgotPasswordText}>Esqueceu a senha?</Text>
           </TouchableOpacity>
 
-          {/* Divider */}
+          <TouchableOpacity
+            style={[styles.loginButton, loading && styles.buttonDisabled]}
+            onPress={handleLogin}
+            activeOpacity={0.8}
+            disabled={loading}
+          >
+            {loading ? (
+              <ActivityIndicator color="#FFFFFF" size="small" />
+            ) : (
+              <Text style={styles.loginButtonText}>Login</Text>
+            )}
+          </TouchableOpacity>
+
           <View style={styles.dividerContainer}>
             <View style={styles.dividerLine} />
             <Text style={styles.dividerText}>
@@ -159,12 +173,12 @@ const SignUpScreen: React.FC = () => {
             <View style={styles.dividerLine} />
           </View>
 
-          {/* Social login buttons */}
           <View style={styles.socialButtonsContainer}>
             <TouchableOpacity
               style={styles.googleButton}
-              onPress={handleGoogleSignUp}
+              onPress={handleGoogleLogin}
               activeOpacity={0.8}
+              disabled={loading}
             >
               <FontAwesome name="google" size={18} color="#EF4444" />
               <Text style={styles.googleButtonText}>Google</Text>
@@ -172,19 +186,24 @@ const SignUpScreen: React.FC = () => {
 
             <TouchableOpacity
               style={styles.facebookButton}
-              onPress={handleFacebookSignUp}
+              onPress={handleFacebookLogin}
               activeOpacity={0.8}
+              disabled={loading}
             >
               <FontAwesome name="facebook" size={18} color="#3B82F6" />
               <Text style={styles.facebookButtonText}>Facebook</Text>
             </TouchableOpacity>
           </View>
 
-          {/* Login link */}
-          <View style={styles.loginLinkContainer}>
-            <Text style={styles.loginLinkText}>Já tem uma conta? </Text>
-            <TouchableOpacity onPress={handleLoginNavigation}>
-              <Text style={styles.loginLink}>Login</Text>
+          <View style={styles.registerLinkContainer}>
+            <Text style={styles.registerLinkText}>
+              Não tem uma conta ainda?{" "}
+            </Text>
+            <TouchableOpacity
+              onPress={handleRegisterNavigation}
+              disabled={loading}
+            >
+              <Text style={styles.registerLink}>Registrar agora</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -218,7 +237,7 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   inputContainer: {
-    marginBottom: 16,
+    marginBottom: 20,
     position: "relative",
     width: "100%",
     maxWidth: 350,
@@ -233,7 +252,6 @@ const styles = StyleSheet.create({
     color: "#374151",
     backgroundColor: "#FFFFFF",
     width: "100%",
-    textAlign: "left",
   },
   passwordInput: {
     paddingRight: 50,
@@ -244,14 +262,24 @@ const styles = StyleSheet.create({
     top: 18,
     padding: 4,
   },
-  registerButton: {
+  forgotPassword: {
+    alignSelf: "flex-end",
+    marginBottom: 20,
+    maxWidth: 350,
+    width: "100%",
+  },
+  forgotPasswordText: {
+    color: "#3B82F6",
+    fontSize: 14,
+    textAlign: "right",
+  },
+  loginButton: {
     backgroundColor: "#3B82F6",
     borderRadius: 12,
     paddingVertical: 16,
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 8,
-    marginBottom: 32,
+    marginBottom: 40,
     width: "100%",
     maxWidth: 350,
     shadowColor: "#3B82F6",
@@ -263,11 +291,14 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 2,
   },
-  registerButtonText: {
+  loginButtonText: {
     color: "#FFFFFF",
     fontSize: 16,
     fontWeight: "600",
     letterSpacing: 0.2,
+  },
+  buttonDisabled: {
+    opacity: 0.6,
   },
   dividerContainer: {
     flexDirection: "row",
@@ -292,7 +323,7 @@ const styles = StyleSheet.create({
     width: "100%",
     maxWidth: 350,
     gap: 12,
-    marginBottom: 32,
+    marginBottom: 40,
   },
   googleButton: {
     flexDirection: "row",
@@ -328,23 +359,23 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: "#3B82F6",
   },
-  loginLinkContainer: {
+  registerLinkContainer: {
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
     paddingBottom: 30,
     flexWrap: "wrap",
   },
-  loginLinkText: {
+  registerLinkText: {
     fontSize: 16,
     color: "#374151",
     textAlign: "center",
   },
-  loginLink: {
+  registerLink: {
     fontSize: 16,
     color: "#3B82F6",
     fontWeight: "600",
   },
 });
 
-export default SignUpScreen;
+export default LoginScreen;

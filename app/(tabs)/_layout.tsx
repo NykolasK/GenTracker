@@ -1,26 +1,32 @@
-import { Stack } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
+import { Tabs } from "expo-router";
 
-export default function RootLayout() {
+export default function TabLayout() {
   return (
-    <Stack initialRouteName="startScreen">
-      <Stack.Screen
-        name="startScreen"
+    <Tabs
+      screenOptions={{
+        headerShown: false,
+        tabBarActiveTintColor: "#3B82F6",
+        tabBarInactiveTintColor: "#9CA3AF",
+        tabBarStyle: {
+          backgroundColor: "#FFFFFF",
+          borderTopWidth: 1,
+          borderTopColor: "#E5E7EB",
+          height: 60,
+          paddingBottom: 8,
+          paddingTop: 8,
+        },
+      }}
+    >
+      <Tabs.Screen
+        name="homeScreen"
         options={{
-          headerShown: false,
+          title: "Home",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="home-outline" size={size} color={color} />
+          ),
         }}
       />
-      <Stack.Screen
-        name="signupScreen"
-        options={{
-          headerShown: false,
-        }}
-      />
-      <Stack.Screen
-        name="loginScreen"
-        options={{
-          headerShown: false,
-        }}
-      />
-    </Stack>
+    </Tabs>
   );
 }
