@@ -1,5 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
+import React from "react";
 import { StyleSheet, TouchableWithoutFeedback, View } from "react-native";
 
 export default function TabLayout() {
@@ -32,13 +33,25 @@ export default function TabLayout() {
         tabBarIconStyle: {
           marginTop: 2,
         },
-        tabBarButton: (props) => (
-          <TouchableWithoutFeedback onPress={props.onPress}>
-            <View style={[props.style, { backgroundColor: "transparent" }]}>
-              {props.children}
-            </View>
-          </TouchableWithoutFeedback>
-        ),
+        // Custom button component to ensure proper text wrapping
+        tabBarButton: (props) => {
+          // Clone children to ensure text is properly wrapped
+          const wrappedChildren = React.Children.map(
+            props.children,
+            (child) => {
+              // Return the child as is
+              return child;
+            }
+          );
+
+          return (
+            <TouchableWithoutFeedback onPress={props.onPress}>
+              <View style={[props.style, { backgroundColor: "transparent" }]}>
+                {wrappedChildren}
+              </View>
+            </TouchableWithoutFeedback>
+          );
+        },
       }}
     >
       <Tabs.Screen

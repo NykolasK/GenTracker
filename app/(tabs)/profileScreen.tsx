@@ -1,43 +1,28 @@
-"use client";
+"use client"
 
-import { Ionicons } from "@expo/vector-icons";
-import { router } from "expo-router";
-import React, { useState } from "react";
-import {
-  Alert,
-  ScrollView,
-  StyleSheet,
-  Switch,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
-import Button from "../../components/ui/Button";
-import Logo from "../../components/ui/Logo";
-import ScreenContainer from "../../components/ui/ScreenContainer";
-import { useAuth } from "../../context/AuthContext";
-import { logOut } from "../../services/authService";
+import React, { useState } from 'react'
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch, Alert } from 'react-native'
+import { Ionicons } from '@expo/vector-icons'
+import { router } from 'expo-router'
+import ScreenContainer from '../../components/ui/ScreenContainer'
+import Logo from '../../components/ui/Logo'
+import Button from '../../components/ui/Button'
+import { useAuth } from '../../context/AuthContext'
+import { logOut } from '../../services/authService'
 
 interface SettingItemProps {
-  icon: string;
-  title: string;
-  subtitle?: string;
-  onPress?: () => void;
-  showArrow?: boolean;
-  rightComponent?: React.ReactNode;
+  icon: string
+  title: string
+  subtitle?: string
+  onPress?: () => void
+  showArrow?: boolean
+  rightComponent?: React.ReactNode
 }
 
-function SettingItem({
-  icon,
-  title,
-  subtitle,
-  onPress,
-  showArrow = true,
-  rightComponent,
-}: SettingItemProps) {
+function SettingItem({ icon, title, subtitle, onPress, showArrow = true, rightComponent }: SettingItemProps) {
   return (
-    <TouchableOpacity
-      style={styles.settingItem}
+    <TouchableOpacity 
+      style={styles.settingItem} 
       onPress={onPress}
       activeOpacity={0.7}
       disabled={!onPress}
@@ -58,115 +43,102 @@ function SettingItem({
         )}
       </View>
     </TouchableOpacity>
-  );
+  )
 }
 
 export default function ProfileScreen() {
-  const { user, userData } = useAuth();
-
+  const { user, userData } = useAuth()
+  
   // Settings states
-  const [notifications, setNotifications] = useState(true);
-  const [darkMode, setDarkMode] = useState(false);
-  const [biometric, setBiometric] = useState(false);
-  const [autoSync, setAutoSync] = useState(true);
+  const [notifications, setNotifications] = useState(true)
+  const [darkMode, setDarkMode] = useState(false)
+  const [biometric, setBiometric] = useState(false)
+  const [autoSync, setAutoSync] = useState(true)
 
   const handleEditProfile = () => {
-    Alert.alert("Editar Perfil", "Funcionalidade será implementada em breve!");
-  };
+    Alert.alert('Editar Perfil', 'Funcionalidade será implementada em breve!')
+  }
 
   const handleChangePassword = () => {
-    Alert.alert("Alterar Senha", "Funcionalidade será implementada em breve!");
-  };
+    Alert.alert('Alterar Senha', 'Funcionalidade será implementada em breve!')
+  }
 
   const handlePrivacySettings = () => {
-    Alert.alert(
-      "Configurações de Privacidade",
-      "Funcionalidade será implementada em breve!"
-    );
-  };
+    Alert.alert('Configurações de Privacidade', 'Funcionalidade será implementada em breve!')
+  }
 
   const handleDataExport = () => {
-    Alert.alert("Exportar Dados", "Funcionalidade será implementada em breve!");
-  };
+    Alert.alert('Exportar Dados', 'Funcionalidade será implementada em breve!')
+  }
 
   const handleSupport = () => {
-    Alert.alert(
-      "Suporte",
-      "Entre em contato conosco em: suporte@gentracker.com"
-    );
-  };
+    Alert.alert('Suporte', 'Entre em contato conosco em: suporte@gentracker.com')
+  }
 
   const handleAbout = () => {
     Alert.alert(
-      "Sobre o GenTracker",
-      "GenTracker v1.0.0\nSua gestão inteligente de compras e listas.\n\n© 2024 GenTracker. Todos os direitos reservados."
-    );
-  };
+      'Sobre o GenTracker',
+      'GenTracker v1.0.0\nSua gestão inteligente de compras e listas.\n\n© 2024 GenTracker. Todos os direitos reservados.'
+    )
+  }
 
   const handleLogout = async () => {
     Alert.alert(
-      "Confirmar Logout",
-      "Tem certeza que deseja sair da sua conta?",
+      'Confirmar Logout',
+      'Tem certeza que deseja sair da sua conta?',
       [
         {
-          text: "Cancelar",
-          style: "cancel",
+          text: 'Cancelar',
+          style: 'cancel'
         },
         {
-          text: "Sair",
-          style: "destructive",
+          text: 'Sair',
+          style: 'destructive',
           onPress: async () => {
             try {
-              const result = await logOut();
+              const result = await logOut()
               if (result.success) {
-                Alert.alert(
-                  "Logout Realizado",
-                  "Você foi desconectado com sucesso!",
-                  [
-                    {
-                      text: "OK",
-                      onPress: () => router.replace("/(auth)/startScreen"),
-                    },
-                  ]
-                );
+                Alert.alert('Logout Realizado', 'Você foi desconectado com sucesso!', [
+                  {
+                    text: 'OK',
+                    onPress: () => router.replace('/(auth)/startScreen')
+                  }
+                ])
               } else {
-                Alert.alert("Erro", result.error || "Erro ao fazer logout");
+                Alert.alert('Erro', result.error || 'Erro ao fazer logout')
               }
             } catch (error) {
-              Alert.alert("Erro", "Ocorreu um erro inesperado");
+              Alert.alert('Erro', 'Ocorreu um erro inesperado')
             }
-          },
-        },
+          }
+        }
       ]
-    );
-  };
+    )
+  }
 
   const handleDeleteAccount = () => {
     Alert.alert(
-      "Excluir Conta",
-      "Esta ação é irreversível. Todos os seus dados serão perdidos permanentemente. Tem certeza?",
+      'Excluir Conta',
+      'Esta ação é irreversível. Todos os seus dados serão perdidos permanentemente. Tem certeza?',
       [
         {
-          text: "Cancelar",
-          style: "cancel",
+          text: 'Cancelar',
+          style: 'cancel'
         },
         {
-          text: "Excluir",
-          style: "destructive",
+          text: 'Excluir',
+          style: 'destructive',
           onPress: () => {
-            Alert.alert(
-              "Funcionalidade em Desenvolvimento",
-              "A exclusão de conta será implementada em breve!"
-            );
-          },
-        },
+            Alert.alert('Funcionalidade em Desenvolvimento', 'A exclusão de conta será implementada em breve!')
+          }
+        }
       ]
-    );
-  };
+    )
+  }
 
   return (
     <ScreenContainer>
-      <ScrollView
+      <ScrollView 
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
@@ -178,22 +150,16 @@ export default function ProfileScreen() {
               <Ionicons name="person" size={40} color="#3498DB" />
             </View>
             <View style={styles.userDetails}>
-              <Text style={styles.userName}>
-                {user?.displayName || "Usuário"}
-              </Text>
+              <Text style={styles.userName}>{user?.displayName || 'Usuário'}</Text>
               <Text style={styles.userEmail}>{user?.email}</Text>
               <View style={styles.userStats}>
                 <Text style={styles.statsText}>
-                  {userData?.stats?.totalScans || 0} escaneamentos •{" "}
-                  {userData?.stats?.totalLists || 0} listas
+                  {userData?.stats?.totalScans || 0} escaneamentos • {userData?.stats?.totalLists || 0} listas
                 </Text>
               </View>
             </View>
           </View>
-          <TouchableOpacity
-            style={styles.editButton}
-            onPress={handleEditProfile}
-          >
+          <TouchableOpacity style={styles.editButton} onPress={handleEditProfile}>
             <Ionicons name="pencil" size={18} color="#3498DB" />
           </TouchableOpacity>
         </View>
@@ -236,8 +202,8 @@ export default function ProfileScreen() {
                 <Switch
                   value={notifications}
                   onValueChange={setNotifications}
-                  trackColor={{ false: "#E5E7EB", true: "#3498DB" }}
-                  thumbColor={notifications ? "#FFFFFF" : "#9CA3AF"}
+                  trackColor={{ false: '#E5E7EB', true: '#3498DB' }}
+                  thumbColor={notifications ? '#FFFFFF' : '#9CA3AF'}
                 />
               }
             />
@@ -250,8 +216,8 @@ export default function ProfileScreen() {
                 <Switch
                   value={darkMode}
                   onValueChange={setDarkMode}
-                  trackColor={{ false: "#E5E7EB", true: "#3498DB" }}
-                  thumbColor={darkMode ? "#FFFFFF" : "#9CA3AF"}
+                  trackColor={{ false: '#E5E7EB', true: '#3498DB' }}
+                  thumbColor={darkMode ? '#FFFFFF' : '#9CA3AF'}
                 />
               }
             />
@@ -264,8 +230,8 @@ export default function ProfileScreen() {
                 <Switch
                   value={biometric}
                   onValueChange={setBiometric}
-                  trackColor={{ false: "#E5E7EB", true: "#3498DB" }}
-                  thumbColor={biometric ? "#FFFFFF" : "#9CA3AF"}
+                  trackColor={{ false: '#E5E7EB', true: '#3498DB' }}
+                  thumbColor={biometric ? '#FFFFFF' : '#9CA3AF'}
                 />
               }
             />
@@ -278,8 +244,8 @@ export default function ProfileScreen() {
                 <Switch
                   value={autoSync}
                   onValueChange={setAutoSync}
-                  trackColor={{ false: "#E5E7EB", true: "#3498DB" }}
-                  thumbColor={autoSync ? "#FFFFFF" : "#9CA3AF"}
+                  trackColor={{ false: '#E5E7EB', true: '#3498DB' }}
+                  thumbColor={autoSync ? '#FFFFFF' : '#9CA3AF'}
                 />
               }
             />
@@ -300,13 +266,7 @@ export default function ProfileScreen() {
               icon="trash-outline"
               title="Limpar Cache"
               subtitle="Libere espaço removendo dados temporários"
-              onPress={() =>
-                // implement cache clearing logic here
-                Alert.alert(
-                  "Cache Limpo",
-                  "Cache do aplicativo foi limpo com sucesso!"
-                )
-              }
+              onPress={() => Alert.alert('Cache Limpo', 'Cache do aplicativo foi limpo com sucesso!')}
             />
           </View>
         </View>
@@ -371,7 +331,7 @@ export default function ProfileScreen() {
         </View>
       </ScrollView>
     </ScreenContainer>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
@@ -382,15 +342,15 @@ const styles = StyleSheet.create({
     paddingBottom: 140,
   },
   header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     padding: 20,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: '#FFFFFF',
     marginHorizontal: 20,
     marginTop: 20,
     borderRadius: 16,
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 2,
@@ -400,17 +360,17 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   userInfo: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     flex: 1,
   },
   avatar: {
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: "#F0F8FF",
-    justifyContent: "center",
-    alignItems: "center",
+    backgroundColor: '#F0F8FF',
+    justifyContent: 'center',
+    alignItems: 'center',
     marginRight: 16,
   },
   userDetails: {
@@ -418,34 +378,34 @@ const styles = StyleSheet.create({
   },
   userName: {
     fontSize: 18,
-    fontWeight: "bold",
-    color: "#1F2937",
+    fontWeight: 'bold',
+    color: '#1F2937',
     marginBottom: 4,
   },
   userEmail: {
     fontSize: 14,
-    color: "#6B7280",
+    color: '#6B7280',
     marginBottom: 6,
   },
   userStats: {
-    backgroundColor: "#F0F8FF",
+    backgroundColor: '#F0F8FF',
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 12,
-    alignSelf: "flex-start",
+    alignSelf: 'flex-start',
   },
   statsText: {
     fontSize: 12,
-    color: "#3498DB",
-    fontWeight: "500",
+    color: '#3498DB',
+    fontWeight: '500',
   },
   editButton: {
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: "#F0F8FF",
-    justifyContent: "center",
-    alignItems: "center",
+    backgroundColor: '#F0F8FF',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   section: {
     marginTop: 20,
@@ -453,22 +413,22 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 16,
-    fontWeight: "600",
-    color: "#1F2937",
+    fontWeight: '600',
+    color: '#1F2937',
     marginBottom: 12,
     marginLeft: 4,
   },
   dangerTitle: {
     fontSize: 16,
-    fontWeight: "600",
-    color: "#E74C3C",
+    fontWeight: '600',
+    color: '#E74C3C',
     marginBottom: 12,
     marginLeft: 4,
   },
   settingsCard: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: '#FFFFFF',
     borderRadius: 16,
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 1,
@@ -478,11 +438,11 @@ const styles = StyleSheet.create({
     elevation: 1,
   },
   dangerCard: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: '#FFFFFF',
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: "#FEE2E2",
-    shadowColor: "#E74C3C",
+    borderColor: '#FEE2E2',
+    shadowColor: '#E74C3C',
     shadowOffset: {
       width: 0,
       height: 1,
@@ -492,26 +452,26 @@ const styles = StyleSheet.create({
     elevation: 1,
   },
   settingItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     paddingVertical: 16,
     paddingHorizontal: 16,
     borderBottomWidth: 1,
-    borderBottomColor: "#F3F4F6",
+    borderBottomColor: '#F3F4F6',
   },
   settingLeft: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     flex: 1,
   },
   settingIcon: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: "#F0F8FF",
-    justifyContent: "center",
-    alignItems: "center",
+    backgroundColor: '#F0F8FF',
+    justifyContent: 'center',
+    alignItems: 'center',
     marginRight: 12,
   },
   settingText: {
@@ -519,35 +479,35 @@ const styles = StyleSheet.create({
   },
   settingTitle: {
     fontSize: 16,
-    fontWeight: "500",
-    color: "#1F2937",
+    fontWeight: '500',
+    color: '#1F2937',
     marginBottom: 2,
   },
   settingSubtitle: {
     fontSize: 13,
-    color: "#6B7280",
+    color: '#6B7280',
     lineHeight: 18,
   },
   settingRight: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   logoutButton: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: '#FFFFFF',
     borderWidth: 2,
-    borderColor: "#E74C3C",
+    borderColor: '#E74C3C',
   },
   logoutButtonText: {
-    color: "#E74C3C",
+    color: '#E74C3C',
   },
   footer: {
-    alignItems: "center",
+    alignItems: 'center',
     paddingVertical: 30,
     paddingHorizontal: 20,
   },
   versionText: {
     fontSize: 12,
-    color: "#9CA3AF",
+    color: '#9CA3AF',
     marginTop: 8,
   },
-});
+})

@@ -1,5 +1,8 @@
 "use client";
 
+import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
+import { useEffect, useState } from "react";
 import {
   ScrollView,
   StyleSheet,
@@ -13,9 +16,43 @@ import QuickActionCard from "../../components/ui/QuickActionCard";
 import ScreenContainer from "../../components/ui/ScreenContainer";
 import StatsCard from "../../components/ui/StatsCard";
 import { useAuth } from "../../context/AuthContext";
+import {
+  firebaseService,
+  type FirebaseInvoice,
+  type ShoppingList,
+} from "../../services/firebaseService";
+import { logger } from "../../utils/logger";
 
 export default function HomeScreen() {
   const { user, userData } = useAuth();
+  const router = useRouter();
+
+  const [recentInvoices, setRecentInvoices] = useState<FirebaseInvoice[]>([]);
+  const [recentLists, setRecentLists] = useState<ShoppingList[]>([]);
+
+  useEffect(() => {
+    const loadData = async () => {
+      if (!user) return;
+
+      try {
+        const [invoices, lists] = await Promise.all([
+          firebaseService.getUserInvoices(user.uid, 3),
+          firebaseService.getUserShoppingLists(user.uid),
+        ]);
+
+        setRecentInvoices(invoices);
+        setRecentLists(lists.slice(0, 3));
+      } catch (error) {
+        // Log error but don't show to user
+        // Log error but don't show to user
+        logger.error("Error loading recent data:", error);
+      }
+    };
+
+    if (user) {
+      loadData();
+    }
+  }, [user]);
 
   const getGreeting = () => {
     const hour = new Date().getHours();
@@ -133,19 +170,59 @@ export default function HomeScreen() {
         <View style={styles.sectionContainer}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Atividade Recente</Text>
-            <TouchableOpacity activeOpacity={0.7}>
+            <TouchableOpacity
+              activeOpacity={0.7}
+              onPress={() => router.push("/(tabs)/historyScreen")}
+            >
               <Text style={styles.seeAllText}>Ver tudo</Text>
             </TouchableOpacity>
           </View>
 
-          <View style={styles.activityCard}>
-            <EmptyState
-              icon="document-text"
-              title="Nenhuma atividade ainda"
-              subtitle="Comece escaneando produtos ou criando listas de compras"
-              size={48}
-            />
-          </View>
+          {recentInvoices.length > 0 || recentLists.length > 0 ? (
+            <View style={styles.activityList}>
+              {recentInvoices.map((invoice) => (
+                <View key={invoice.id} style={styles.activityItem}>
+                  <View style={styles.activityIcon}>
+                    <Ionicons name="receipt" size={20} color="#3498DB" />
+                  </View>
+                  <View style={styles.activityContent}>
+                    <Text style={styles.activityTitle}>
+                      {invoice.store_name}
+                    </Text>
+                    <Text style={styles.activitySubtitle}>
+                      {firebaseService.formatCurrency(invoice.total_amount)} •{" "}
+                      {firebaseService.formatDate(invoice.invoice_date)}
+                    </Text>
+                  </View>
+                </View>
+              ))}
+
+              {recentLists.map((list) => (
+                <View key={list.id} style={styles.activityItem}>
+                  <View style={styles.activityIcon}>
+                    <Ionicons name="list" size={20} color="#27AE60" />
+                  </View>
+                  <View style={styles.activityContent}>
+                    <Text style={styles.activityTitle}>{list.name}</Text>
+                    <Text style={styles.activitySubtitle}>
+                      {list.items.length} itens •{" "}
+                      {list.items.filter((item) => item.purchased).length}{" "}
+                      comprados
+                    </Text>
+                  </View>
+                </View>
+              ))}
+            </View>
+          ) : (
+            <View style={styles.activityCard}>
+              <EmptyState
+                icon="document-text"
+                title="Nenhuma atividade ainda"
+                subtitle="Comece escaneando produtos ou criando listas de compras"
+                size={48}
+              />
+            </View>
+          )}
         </View>
       </ScrollView>
     </ScreenContainer>
@@ -155,7 +232,6 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
-    paddingTop: 40,
   },
   scrollContent: {
     paddingBottom: 120,
@@ -225,5 +301,47 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.05,
     shadowRadius: 4,
     elevation: 1,
+  },
+  activityList: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 12,
+    padding: 16,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 1,
+  },
+  activityItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: "#F3F4F6",
+  },
+  activityIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: "#F8F9FA",
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 12,
+  },
+  activityContent: {
+    flex: 1,
+  },
+  activityTitle: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#1F2937",
+    marginBottom: 2,
+  },
+  activitySubtitle: {
+    fontSize: 12,
+    color: "#6B7280",
   },
 });

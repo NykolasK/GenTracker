@@ -7,6 +7,7 @@ import {
 } from "firebase/auth";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { auth, db } from "../config/firebaseConfig";
+import { logger } from "../utils/logger";
 
 export interface AuthResult {
   success: boolean;
@@ -66,7 +67,7 @@ export const signUp = async (
       user: user,
     };
   } catch (error: any) {
-    console.error("Sign up error:", error);
+    logger.error("Sign up error:", error);
 
     let errorMessage = "Erro ao criar conta";
 
@@ -109,7 +110,7 @@ export const signIn = async (
       user: user,
     };
   } catch (error: any) {
-    console.error("Sign in error:", error);
+    logger.error("Sign in error:", error);
 
     let errorMessage = "Erro ao fazer login";
 
@@ -145,7 +146,7 @@ export const logOut = async (): Promise<AuthResult> => {
       message: "Logout realizado com sucesso!",
     };
   } catch (error: any) {
-    console.error("Logout error:", error);
+    logger.error("Logout error:", error);
     return {
       success: false,
       error: "Erro ao fazer logout",
@@ -161,7 +162,7 @@ export const getUserData = async (uid: string): Promise<UserData | null> => {
     }
     return null;
   } catch (error) {
-    console.error("Error getting user data:", error);
+    logger.error("Error getting user data:", error);
     return null;
   }
 };
