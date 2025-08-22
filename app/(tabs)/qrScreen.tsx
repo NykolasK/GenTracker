@@ -333,18 +333,6 @@ export default function QRScreen() {
               </Text>
             </View>
             <View style={styles.infoItem}>
-              <Ionicons name="library" size={20} color="#3498DB" />
-              <Text style={styles.infoText}>
-                Categorização automática por regras
-              </Text>
-            </View>
-            <View style={styles.infoItem}>
-              <Ionicons name="list" size={20} color="#3498DB" />
-              <Text style={styles.infoText}>
-                Lista de compras gerada automaticamente
-              </Text>
-            </View>
-            <View style={styles.infoItem}>
               <Ionicons name="time" size={20} color="#F39C12" />
               <Text style={styles.infoText}>
                 Histórico de compras organizado
@@ -401,6 +389,7 @@ const styles = StyleSheet.create({
   infoContainer: {
     marginTop: 30,
     gap: 16,
+    
   },
   infoItem: {
     flexDirection: "row",

@@ -1,14 +1,14 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { View, Text, StyleSheet, ScrollView, Alert, Share } from "react-native"
 import { Ionicons } from "@expo/vector-icons"
 import { router, useLocalSearchParams } from "expo-router"
-import ScreenContainer from "../components/ui/ScreenContainer"
+import { useEffect, useState } from "react"
+import { Alert, ScrollView, StyleSheet, Text, View } from "react-native"
 import ActionButton from "../components/ui/ActionButton"
 import DiscountIndicator from "../components/ui/DiscountIndicator"
-import { firebaseService, type FirebaseInvoice } from "../services/firebaseService"
+import ScreenContainer from "../components/ui/ScreenContainer"
 import { DateService } from "../services/dateService"
+import { firebaseService, type FirebaseInvoice } from "../services/firebaseService"
 
 interface ProductItemProps {
   item: any
@@ -21,15 +21,15 @@ function ProductItem({ item, index }: ProductItemProps) {
       Alimentação: "#27AE60",
       Bebidas: "#3498DB",
       Limpeza: "#9B59B6",
-      "Higiene Pessoal": "#E91E63",
-      "Casa e Decoração": "#FF9800",
+      Higiene: "#E91E63",
+      Decoração: "#FF9800",
       Eletrônicos: "#607D8B",
       Papelaria: "#795548",
-      "Pet Shop": "#4CAF50",
+      PetShop: "#4CAF50",
       Medicamentos: "#F44336",
-      "Utilidades Domésticas": "#2196F3",
-      "Roupas e Acessórios": "#E91E63",
-      "Esportes e Lazer": "#FF5722",
+      Domésticas: "#2196F3",
+      Acessórios: "#E91E63",
+      Lazer: "#FF5722",
       Automotivo: "#424242",
       Jardinagem: "#8BC34A",
       Outros: "#9E9E9E",
@@ -42,7 +42,8 @@ function ProductItem({ item, index }: ProductItemProps) {
       <View style={styles.productHeader}>
         <View style={styles.productInfo}>
           <Text style={styles.productName}>{item.name}</Text>
-          {item.code && <Text style={styles.productCode}>Código: {item.code}</Text>}
+          {/* FIXED: Changed from && to ternary operator */}
+          {item.code ? <Text style={styles.productCode}>Código: {item.code}</Text> : null}
         </View>
         <View
           style={[
@@ -139,56 +140,6 @@ export default function InvoiceDetailsScreen() {
     )
   }
 
-  const handleShare = async () => {
-    if (!invoice) return
-
-    const shareText = `
-📄 Nota Fiscal - ${invoice.store_name}
-
-🏪 Loja: ${invoice.store_name}
-📋 Número: ${invoice.invoice_number}
-📅 Data da Nota: ${DateService.formatForDisplay(invoice.invoice_date, false)}
-🔍 Escaneada em: ${DateService.formatForDisplay(invoice.scanned_at, true)}
-
-💰 Total: ${firebaseService.formatCurrency(invoice.total_amount)}
-📦 Itens: ${invoice.items.length}
-
-${invoice.discounts && invoice.discounts > 0 ? `💸 Desconto: ${firebaseService.formatCurrency(invoice.discounts)}\n` : ""}
-${invoice.taxes && invoice.taxes > 0 ? `🏛️ Impostos: ${firebaseService.formatCurrency(invoice.taxes)}\n` : ""}
-
-📱 Gerado pelo GenTracker
-    `.trim()
-
-    try {
-      await Share.share({
-        message: shareText,
-        title: `Nota Fiscal - ${invoice.store_name}`,
-      })
-    } catch (error) {
-      console.error("Error sharing invoice:", error)
-    }
-  }
-
-  const handleCreateShoppingList = async () => {
-    if (!invoice) return
-
-    const listId = await firebaseService.createShoppingListFromInvoice(invoice)
-    Alert.alert("Lista Criada!", "Uma nova lista de compras foi criada baseada nesta nota fiscal.", [
-      {
-        text: "Ver Lista",
-        onPress: () =>
-          router.push({
-            pathname: "/shopping-list-details",
-            params: { listId },
-          }),
-      },
-      {
-        text: "OK",
-        style: "cancel",
-      },
-    ])
-  }
-
   if (loading) {
     return (
       <ScreenContainer>
@@ -233,7 +184,8 @@ ${invoice.taxes && invoice.taxes > 0 ? `🏛️ Impostos: ${firebaseService.form
           </View>
 
           {/* Desconto */}
-          {invoice.discounts && invoice.discounts > 0 && (
+          {/* FIXED: Changed from && to ternary operator */}
+          {invoice.discounts && invoice.discounts > 0 ? (
             <View style={styles.discountContainer}>
               <DiscountIndicator
                 amount={invoice.discounts}
@@ -243,23 +195,25 @@ ${invoice.taxes && invoice.taxes > 0 ? `🏛️ Impostos: ${firebaseService.form
                 originalAmount={invoice.total_amount + invoice.discounts}
               />
             </View>
-          )}
+          ) : null}
 
-          {invoice.store_address && (
+          {/* FIXED: Changed from && to ternary operator */}
+          {invoice.store_address ? (
             <View style={styles.storeDetail}>
               <Ionicons name="location-outline" size={16} color="#6B7280" />
               <Text style={styles.storeAddress} numberOfLines={3}>
                 {invoice.store_address}
               </Text>
             </View>
-          )}
+          ) : null}
 
-          {invoice.store_cnpj && (
+          {/* FIXED: Changed from && to ternary operator */}
+          {invoice.store_cnpj ? (
             <View style={styles.storeDetail}>
               <Ionicons name="business-outline" size={16} color="#6B7280" />
               <Text style={styles.storeCnpj}>CNPJ: {invoice.store_cnpj}</Text>
             </View>
-          )}
+          ) : null}
         </View>
 
         {/* Invoice Information */}
@@ -272,12 +226,13 @@ ${invoice.taxes && invoice.taxes > 0 ? `🏛️ Impostos: ${firebaseService.form
               <Text style={styles.detailValue}>{invoice.invoice_number}</Text>
             </View>
 
-            {invoice.series && (
+            {/* FIXED: Changed from && to ternary operator */}
+            {invoice.series ? (
               <View style={styles.invoiceDetailRow}>
                 <Text style={styles.detailLabel}>Série:</Text>
                 <Text style={styles.detailValue}>{invoice.series}</Text>
               </View>
-            )}
+            ) : null}
 
             <View style={styles.invoiceDetailRow}>
               <Text style={styles.detailLabel}>Data de Emissão:</Text>
@@ -298,21 +253,23 @@ ${invoice.taxes && invoice.taxes > 0 ? `🏛️ Impostos: ${firebaseService.form
               </Text>
             </View>
 
-            {invoice.protocol && (
+            {/* FIXED: Changed from && to ternary operator */}
+            {invoice.protocol ? (
               <View style={styles.invoiceDetailRow}>
                 <Text style={styles.detailLabel}>Protocolo:</Text>
                 <Text style={styles.detailValue}>{invoice.protocol}</Text>
               </View>
-            )}
+            ) : null}
 
-            {invoice.access_key && (
+            {/* FIXED: Changed from && to ternary operator */}
+            {invoice.access_key ? (
               <View style={styles.invoiceDetailRow}>
                 <Text style={styles.detailLabel}>Chave de Acesso:</Text>
                 <Text style={styles.detailValue} numberOfLines={2}>
                   {invoice.access_key}
                 </Text>
               </View>
-            )}
+            ) : null}
           </View>
         </View>
 
@@ -328,12 +285,13 @@ ${invoice.taxes && invoice.taxes > 0 ? `🏛️ Impostos: ${firebaseService.form
               </Text>
             </View>
 
-            {invoice.taxes && invoice.taxes > 0 && (
+            {/* FIXED: Changed from && to ternary operator */}
+            {invoice.taxes && invoice.taxes > 0 ? (
               <View style={styles.summaryRow}>
                 <Text style={styles.summaryLabel}>Impostos:</Text>
                 <Text style={styles.summaryValue}>{firebaseService.formatCurrency(invoice.taxes)}</Text>
               </View>
-            )}
+            ) : null}
 
             <View style={styles.totalRow}>
               <Text style={styles.totalLabel}>Total:</Text>
@@ -361,24 +319,6 @@ ${invoice.taxes && invoice.taxes > 0 ? `🏛️ Impostos: ${firebaseService.form
 
         {/* Action Buttons */}
         <View style={styles.actionsCard}>
-          <ActionButton
-            title="Criar Lista de Compras"
-            onPress={handleCreateShoppingList}
-            variant="primary"
-            icon="list"
-            actionName="create-shopping-list"
-            cooldownMs={3000}
-          />
-
-          <ActionButton
-            title="Compartilhar"
-            onPress={handleShare}
-            variant="secondary"
-            icon="share-outline"
-            actionName="share-invoice"
-            cooldownMs={1000}
-          />
-
           <ActionButton
             title="Excluir Nota Fiscal"
             onPress={handleDelete}
@@ -678,10 +618,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-  },
-  totalValue: {
-    color: "#3498DB",
-    fontWeight: "600",
   },
   actionsCard: {
     backgroundColor: "#FFFFFF",

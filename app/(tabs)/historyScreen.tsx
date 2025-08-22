@@ -54,14 +54,15 @@ function InvoiceCard({ invoice, onPress, onDelete }: InvoiceCardProps) {
         </View>
       </View>
 
-      {invoice.discounts && invoice.discounts > 0 && (
+      {/* FIXED: Changed from && to ternary operator */}
+      {invoice.discounts && invoice.discounts > 0 ? (
         <View style={styles.discountInfo}>
           <Ionicons name="pricetag" size={14} color="#27AE60" />
           <Text style={styles.discountText}>
             Desconto: {firebaseService.formatCurrency(invoice.discounts)}
           </Text>
         </View>
-      )}
+      ) : null}
 
       <View style={styles.cardBody}>
         <View style={styles.itemsInfo}>
@@ -322,14 +323,15 @@ export default function HistoryScreen() {
         <View style={styles.header}>
           <Text style={styles.title}>Histórico de Compras</Text>
           <View style={styles.headerActions}>
-            {hasActiveFilters() && (
+            {/* FIXED: Changed from && to ternary operator */}
+            {hasActiveFilters() ? (
               <TouchableOpacity
                 style={styles.clearFiltersButton}
                 onPress={clearFilters}
               >
                 <Ionicons name="close-circle" size={20} color="#E74C3C" />
               </TouchableOpacity>
-            )}
+            ) : null}
             <TouchableOpacity
               style={[
                 styles.filterButton,
@@ -347,48 +349,49 @@ export default function HistoryScreen() {
         </View>
 
         {/* Active Filters Display */}
-        {hasActiveFilters() && (
+        {/* FIXED: Changed from && to ternary operator */}
+        {hasActiveFilters() ? (
           <View style={styles.activeFiltersContainer}>
             <Text style={styles.activeFiltersTitle}>Filtros ativos:</Text>
             <View style={styles.activeFiltersList}>
-              {filters.dateFrom && (
+              {filters.dateFrom ? (
                 <View style={styles.activeFilter}>
                   <Text style={styles.activeFilterText}>
                     De: {firebaseService.formatDate(filters.dateFrom)}
                   </Text>
                 </View>
-              )}
-              {filters.dateTo && (
+              ) : null}
+              {filters.dateTo ? (
                 <View style={styles.activeFilter}>
                   <Text style={styles.activeFilterText}>
                     Até: {firebaseService.formatDate(filters.dateTo)}
                   </Text>
                 </View>
-              )}
-              {filters.minAmount && (
+              ) : null}
+              {filters.minAmount ? (
                 <View style={styles.activeFilter}>
                   <Text style={styles.activeFilterText}>
                     Min: {firebaseService.formatCurrency(filters.minAmount)}
                   </Text>
                 </View>
-              )}
-              {filters.maxAmount && (
+              ) : null}
+              {filters.maxAmount ? (
                 <View style={styles.activeFilter}>
                   <Text style={styles.activeFilterText}>
                     Max: {firebaseService.formatCurrency(filters.maxAmount)}
                   </Text>
                 </View>
-              )}
-              {filters.storeName && (
+              ) : null}
+              {filters.storeName ? (
                 <View style={styles.activeFilter}>
                   <Text style={styles.activeFilterText}>
                     Loja: {filters.storeName}
                   </Text>
                 </View>
-              )}
+              ) : null}
             </View>
           </View>
-        )}
+        ) : null}
 
         {/* Invoices List */}
         <View style={styles.invoicesList}>
@@ -403,7 +406,8 @@ export default function HistoryScreen() {
         </View>
 
         {/* Load More Button */}
-        {invoices.length >= 50 && (
+        {/* FIXED: Changed from && to ternary operator */}
+        {invoices.length >= 50 ? (
           <View style={styles.loadMoreContainer}>
             <TouchableOpacity
               style={styles.loadMoreButton}
@@ -412,7 +416,7 @@ export default function HistoryScreen() {
               <Text style={styles.loadMoreText}>Carregar Mais</Text>
             </TouchableOpacity>
           </View>
-        )}
+        ) : null}
       </ScrollView>
 
       {/* Filters Modal */}

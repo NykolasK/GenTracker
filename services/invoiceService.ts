@@ -266,7 +266,7 @@ class InvoiceService {
   private categorizeProduct(productName: string): string {
     const productLower = productName.toLowerCase().trim();
 
-    // Mapeamento de categorias com palavras-chave expandidas
+    // Mapeamento de categorias com palavras-chave
     const categoryRules = {
       Alimentação: {
         keywords: [
@@ -621,24 +621,14 @@ class InvoiceService {
     for (const [category, rules] of Object.entries(categoryRules)) {
       // Verifica palavras-chave
       if (rules.keywords.some((keyword) => productLower.includes(keyword))) {
-        logger.info(
-          `📋 Produto "${productName}" categorizado como "${category}" (palavra-chave)`
-        );
         return category;
       }
 
       // Verifica padrões regex
       if (rules.patterns.some((pattern) => pattern.test(productName))) {
-        logger.info(
-          `📋 Produto "${productName}" categorizado como "${category}" (padrão)`
-        );
         return category;
       }
     }
-
-    logger.info(
-      `❓ Produto "${productName}" não categorizado, usando "Outros"`
-    );
     return "Outros";
   }
 

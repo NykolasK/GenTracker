@@ -84,7 +84,7 @@ export default function HomeScreen() {
       icon: "qr-code",
       color: "#3498DB",
       onPress: () => {
-        // Navigate to QR scanner
+        router.push("/(tabs)/qrScreen");
       },
     },
     {
@@ -94,7 +94,7 @@ export default function HomeScreen() {
       icon: "add-circle",
       color: "#27AE60",
       onPress: () => {
-        // Navigate to create list
+        router.push("/(tabs)/listsScreen")
       },
     },
     {
@@ -104,17 +104,7 @@ export default function HomeScreen() {
       icon: "time",
       color: "#F39C12",
       onPress: () => {
-        // Navigate to history
-      },
-    },
-    {
-      id: 4,
-      title: "Economias",
-      subtitle: "Ver total economizado",
-      icon: "trending-down",
-      color: "#E74C3C",
-      onPress: () => {
-        // Navigate to savings
+        router.push("/(tabs)/historyScreen")
       },
     },
   ];
