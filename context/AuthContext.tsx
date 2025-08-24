@@ -5,6 +5,7 @@ import type React from "react";
 import { createContext, useContext, useEffect, useState } from "react";
 import { auth } from "../config/firebaseConfig";
 import { getUserData, type UserData } from "../services/authService";
+import { logger } from "../utils/logger";
 
 interface AuthContextType {
   user: User | null;
@@ -34,13 +35,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    logger.info("Setting up auth state listener");
+
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      logger.info("Auth state changed:", user ? user.uid : "no user");
       setUser(user);
 
       if (user) {
         // Fetch additional user data from Firestore
-        const data = await getUserData(user.uid);
-        setUserData(data);
+        try {
+          const data = await getUserData(user.uid);
+          setUserData(data);
+          logger.info("User data loaded successfully:", user.uid);
+        } catch (error) {
+          logger.error("Failed to load user data:", error);
+          setUserData(null);
+        }
       } else {
         setUserData(null);
       }
@@ -48,7 +58,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       setLoading(false);
     });
 
-    return unsubscribe;
+    return () => {
+      logger.info("Cleaning up auth state listener");
+      unsubscribe();
+    };
   }, []);
 
   return (

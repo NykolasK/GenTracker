@@ -1,7 +1,15 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 import React from "react";
-import { StyleSheet, TouchableWithoutFeedback, View } from "react-native";
+import {
+  Dimensions,
+  StyleSheet,
+  TouchableWithoutFeedback,
+  View,
+} from "react-native";
+
+const { width: SCREEN_WIDTH } = Dimensions.get("window");
+const isSmallScreen = SCREEN_WIDTH < 375;
 
 export default function TabLayout() {
   return (
@@ -13,9 +21,9 @@ export default function TabLayout() {
         tabBarStyle: {
           backgroundColor: "#FFFFFF",
           borderTopWidth: 0,
-          height: 90,
-          paddingBottom: 25,
-          paddingTop: 15,
+          height: isSmallScreen ? 80 : 90, // Altura menor em telas pequenas
+          paddingBottom: isSmallScreen ? 20 : 25,
+          paddingTop: isSmallScreen ? 10 : 15,
           shadowColor: "#000",
           shadowOffset: {
             width: 0,
@@ -26,7 +34,7 @@ export default function TabLayout() {
           elevation: 10,
         },
         tabBarLabelStyle: {
-          fontSize: 11,
+          fontSize: isSmallScreen ? 10 : 11,
           fontWeight: "500",
           marginTop: 4,
         },
@@ -59,7 +67,11 @@ export default function TabLayout() {
         options={{
           title: "Início",
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="home" size={size} color={color} />
+            <Ionicons
+              name="home"
+              size={isSmallScreen ? size - 2 : size}
+              color={color}
+            />
           ),
         }}
       />
@@ -68,7 +80,11 @@ export default function TabLayout() {
         options={{
           title: "Listas",
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="document-text" size={size} color={color} />
+            <Ionicons
+              name="document-text"
+              size={isSmallScreen ? size - 2 : size}
+              color={color}
+            />
           ),
         }}
       />
@@ -77,8 +93,18 @@ export default function TabLayout() {
         options={{
           title: "",
           tabBarIcon: ({ focused }) => (
-            <View style={[styles.qrButton, focused && styles.qrButtonActive]}>
-              <Ionicons name="qr-code" size={28} color="#FFFFFF" />
+            <View
+              style={[
+                styles.qrButton,
+                focused && styles.qrButtonActive,
+                isSmallScreen && styles.qrButtonSmall,
+              ]}
+            >
+              <Ionicons
+                name="qr-code"
+                size={isSmallScreen ? 24 : 28}
+                color="#FFFFFF"
+              />
             </View>
           ),
           tabBarLabel: () => null,
@@ -89,7 +115,11 @@ export default function TabLayout() {
         options={{
           title: "Histórico",
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="time" size={size} color={color} />
+            <Ionicons
+              name="time"
+              size={isSmallScreen ? size - 2 : size}
+              color={color}
+            />
           ),
         }}
       />
@@ -98,7 +128,11 @@ export default function TabLayout() {
         options={{
           title: "Perfil",
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person" size={size} color={color} />
+            <Ionicons
+              name="person"
+              size={isSmallScreen ? size - 2 : size}
+              color={color}
+            />
           ),
         }}
       />
@@ -129,5 +163,11 @@ const styles = StyleSheet.create({
   qrButtonActive: {
     backgroundColor: "#2980B9",
     transform: [{ scale: 1.05 }],
+  },
+  qrButtonSmall: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    marginTop: -20,
   },
 });

@@ -172,7 +172,21 @@ export default function LoadingScreen() {
       dotsSequence.stop();
       particlesAnimation.stop();
     };
-  }, [user, loading]);
+  }, [
+    user,
+    loading,
+    fadeAnim,
+    scaleAnim,
+    slideAnim,
+    rotateAnim,
+    dot1Anim,
+    dot2Anim,
+    dot3Anim,
+    progressAnim,
+    particle1,
+    particle2,
+    particle3,
+  ]);
 
   const rotation = rotateAnim.interpolate({
     inputRange: [0, 1],

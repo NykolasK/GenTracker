@@ -23,6 +23,7 @@ import {
   type InvoiceFilters,
 } from "../../services/firebaseService";
 import { logger } from "../../utils/logger";
+import { ResponsiveUtils } from "../../utils/responsiveUtils";
 
 interface InvoiceCardProps {
   invoice: FirebaseInvoice;
@@ -507,13 +508,14 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingHorizontal: 20,
-    marginBottom: 20,
+    paddingHorizontal: ResponsiveUtils.getHorizontalPadding(),
+    marginBottom: ResponsiveUtils.getVerticalSpacing(),
   },
   title: {
-    fontSize: 24,
+    fontSize: ResponsiveUtils.getFontSizes().header,
     fontWeight: "bold",
     color: "#1F2937",
+    flexShrink: 1,
   },
   headerActions: {
     flexDirection: "row",
@@ -540,19 +542,20 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   activeFiltersContainer: {
-    paddingHorizontal: 20,
-    marginBottom: 20,
+    paddingHorizontal: ResponsiveUtils.getHorizontalPadding(),
+    marginBottom: ResponsiveUtils.getVerticalSpacing(),
   },
   activeFiltersTitle: {
-    fontSize: 14,
+    fontSize: ResponsiveUtils.getFontSizes().medium,
     fontWeight: "600",
     color: "#374151",
-    marginBottom: 8,
+    marginBottom: ResponsiveUtils.getSpacing().sm,
   },
   activeFiltersList: {
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 8,
+    maxWidth: "100%", // Garante que não exceda a largura da tela
   },
   activeFilter: {
     backgroundColor: "#EBF8FF",
@@ -561,20 +564,22 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     borderWidth: 1,
     borderColor: "#3498DB",
+    maxWidth: "100%", // Evita que tags muito longas quebrem o layout
   },
   activeFilterText: {
     fontSize: 12,
     color: "#3498DB",
     fontWeight: "500",
+    flexShrink: 1, // Permite que o texto se ajuste
   },
   invoicesList: {
-    paddingHorizontal: 20,
-    gap: 12,
+    paddingHorizontal: ResponsiveUtils.getHorizontalPadding(),
+    gap: ResponsiveUtils.getSpacing().md,
   },
   invoiceCard: {
     backgroundColor: "#FFFFFF",
-    borderRadius: 16,
-    padding: 16,
+    borderRadius: ResponsiveUtils.isSmallDevice ? 12 : 16,
+    padding: ResponsiveUtils.getCardPadding(),
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
@@ -593,20 +598,25 @@ const styles = StyleSheet.create({
   },
   storeInfo: {
     flex: 1,
+    marginRight: 8, // Espaço entre nome da loja e valores
   },
   storeName: {
     fontSize: 16,
     fontWeight: "600",
     color: "#1F2937",
     marginBottom: 4,
+    flexShrink: 1, // Permite quebra de texto
   },
   invoiceNumber: {
     fontSize: 12,
     color: "#6B7280",
+    flexShrink: 1, // Permite quebra de texto
   },
   cardActions: {
     alignItems: "flex-end",
     gap: 8,
+    minWidth: 80, // Largura mínima para evitar sobreposição
+    flexShrink: 0, // Evita que os valores se comprimam
   },
   amount: {
     fontSize: 18,
@@ -620,24 +630,30 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     marginBottom: 12,
+    flexWrap: "wrap", // Permite quebra em telas menores
+    gap: 8,
   },
   itemsInfo: {
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
+    minWidth: 80, // Largura mínima
   },
   itemsText: {
     fontSize: 14,
     color: "#6B7280",
+    flexShrink: 1,
   },
   dateInfo: {
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
+    flexShrink: 1,
   },
   dateText: {
     fontSize: 14,
     color: "#6B7280",
+    flexShrink: 1,
   },
   cardFooter: {
     flexDirection: "row",
@@ -648,11 +664,13 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
+    flex: 1, // Ocupa espaço disponível
   },
   scannedText: {
     fontSize: 12,
     color: "#3498DB",
     fontWeight: "500",
+    flexShrink: 1, // Permite quebra de texto
   },
   discountInfo: {
     flexDirection: "row",

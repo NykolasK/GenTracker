@@ -181,6 +181,16 @@ class FirebaseService {
       );
       logger.info("✅ Price history saved");
 
+      // Update user stats after saving invoice
+      try {
+        const { statsService } = await import("./statsService");
+        await statsService.updateUserStats(userId);
+        logger.info("✅ User stats updated after invoice save");
+      } catch (statsError) {
+        logger.warn("⚠️ Failed to update user stats:", statsError);
+        // Don't throw error for stats update failure
+      }
+
       return docRef.id;
     } catch (error) {
       logger.error("❌ Error in saveInvoice:", error);
@@ -421,6 +431,20 @@ class FirebaseService {
     }
   }
 
+  async updateInvoiceDate(invoiceId: string, newDate: Date): Promise<void> {
+    try {
+      const invoiceRef = doc(db, "invoices", invoiceId);
+      await updateDoc(invoiceRef, {
+        invoice_date: newDate,
+        updated_at: serverTimestamp(),
+      });
+      logger.info("✅ Invoice date updated successfully");
+    } catch (error) {
+      logger.error("❌ Error updating invoice date:", error);
+      throw new Error("Failed to update invoice date");
+    }
+  }
+
   // Shopping List Management
   async createShoppingListFromInvoice(
     invoice: FirebaseInvoice
@@ -465,6 +489,15 @@ class FirebaseService {
       );
       logger.info("✅ Shopping list saved with ID:", docRef.id);
 
+      // Update user stats after creating shopping list
+      try {
+        const { statsService } = await import("./statsService");
+        await statsService.updateUserStats(invoice.userId);
+        logger.info("✅ User stats updated after shopping list creation");
+      } catch (statsError) {
+        logger.warn("⚠️ Failed to update user stats:", statsError);
+      }
+
       return docRef.id;
     } catch (error) {
       logger.error("❌ Error creating shopping list from invoice:", error);
@@ -475,15 +508,22 @@ class FirebaseService {
   async createCustomShoppingList(
     userId: string,
     name: string,
-    description?: string
+    description?: string,
+    initialItems?: ShoppingListItem[]
   ): Promise<string> {
     try {
+      const items = initialItems || [];
+      const totalCost = items.reduce(
+        (sum, item) => sum + (item.estimated_price || 0) * item.quantity,
+        0
+      );
+
       const shoppingList: Omit<ShoppingList, "id"> = {
         userId,
         name,
-        description,
-        items: [],
-        total_estimated_cost: 0,
+        description: description || "", // Garantir que description nunca seja undefined
+        items,
+        total_estimated_cost: totalCost,
         status: "active",
         created_at: serverTimestamp(),
         updated_at: serverTimestamp(),
@@ -493,6 +533,18 @@ class FirebaseService {
         collection(db, "shopping_lists"),
         shoppingList
       );
+
+      // Update user stats after creating custom shopping list
+      try {
+        const { statsService } = await import("./statsService");
+        await statsService.updateUserStats(userId);
+        logger.info(
+          "✅ User stats updated after custom shopping list creation"
+        );
+      } catch (statsError) {
+        logger.warn("⚠️ Failed to update user stats:", statsError);
+      }
+
       return docRef.id;
     } catch (error) {
       logger.error("Error creating shopping list:", error);

@@ -2,8 +2,9 @@
 
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
+  RefreshControl,
   ScrollView,
   StyleSheet,
   Text,
@@ -16,43 +17,51 @@ import QuickActionCard from "../../components/ui/QuickActionCard";
 import ScreenContainer from "../../components/ui/ScreenContainer";
 import StatsCard from "../../components/ui/StatsCard";
 import { useAuth } from "../../context/AuthContext";
+import { useUserStats } from "../../hooks/useUserStats";
 import {
   firebaseService,
   type FirebaseInvoice,
   type ShoppingList,
 } from "../../services/firebaseService";
+import { statsService } from "../../services/statsService";
 import { logger } from "../../utils/logger";
 
 export default function HomeScreen() {
   const { user, userData } = useAuth();
   const router = useRouter();
+  const { userStats, refreshStats } = useUserStats();
 
   const [recentInvoices, setRecentInvoices] = useState<FirebaseInvoice[]>([]);
   const [recentLists, setRecentLists] = useState<ShoppingList[]>([]);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const loadData = useCallback(async () => {
+    if (!user) return;
+
+    try {
+      const [invoices, lists] = await Promise.all([
+        firebaseService.getUserInvoices(user.uid, 3),
+        firebaseService.getUserShoppingLists(user.uid),
+      ]);
+
+      setRecentInvoices(invoices);
+      setRecentLists(lists.slice(0, 3));
+    } catch (error) {
+      logger.error("Error loading recent data:", error);
+    }
+  }, [user]);
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await Promise.all([loadData(), refreshStats()]);
+    setRefreshing(false);
+  };
 
   useEffect(() => {
-    const loadData = async () => {
-      if (!user) return;
-
-      try {
-        const [invoices, lists] = await Promise.all([
-          firebaseService.getUserInvoices(user.uid, 3),
-          firebaseService.getUserShoppingLists(user.uid),
-        ]);
-
-        setRecentInvoices(invoices);
-        setRecentLists(lists.slice(0, 3));
-      } catch (error) {
-        // Log error but don't show to user
-        // Log error but don't show to user
-        logger.error("Error loading recent data:", error);
-      }
-    };
-
     if (user) {
       loadData();
     }
-  }, [user]);
+  }, [user, loadData]);
 
   const getGreeting = () => {
     const hour = new Date().getHours();
@@ -63,15 +72,21 @@ export default function HomeScreen() {
 
   const statsData = [
     {
-      number: userData?.stats?.totalScans || 0,
+      number: userStats?.totalProducts || userData?.stats?.totalScans || 0,
       label: "Produtos Escaneados",
     },
     {
-      number: userData?.stats?.totalLists || 0,
+      number: userStats?.totalInvoices || 0,
+      label: "Notas Fiscais",
+    },
+    {
+      number: userStats?.totalLists || userData?.stats?.totalLists || 0,
       label: "Listas Criadas",
     },
     {
-      number: `R$ ${userData?.stats?.totalSavings || "0,00"}`,
+      number: userStats
+        ? `R$ ${statsService.formatCurrencyValue(userStats.totalSavings)}`
+        : `R$ ${userData?.stats?.totalSavings || "0,00"}`,
       label: "Economizado",
     },
   ];
@@ -94,7 +109,7 @@ export default function HomeScreen() {
       icon: "add-circle",
       color: "#27AE60",
       onPress: () => {
-        router.push("/(tabs)/listsScreen")
+        router.push("/(tabs)/listsScreen");
       },
     },
     {
@@ -104,7 +119,7 @@ export default function HomeScreen() {
       icon: "time",
       color: "#F39C12",
       onPress: () => {
-        router.push("/(tabs)/historyScreen")
+        router.push("/(tabs)/historyScreen");
       },
     },
   ];
@@ -117,6 +132,9 @@ export default function HomeScreen() {
         showsVerticalScrollIndicator={false}
         bounces={false}
         overScrollMode="never"
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
       >
         {/* Logo and Greeting Section */}
         <View style={styles.topSection}>
@@ -138,6 +156,39 @@ export default function HomeScreen() {
         <View style={styles.statsContainer}>
           <StatsCard stats={statsData} />
         </View>
+
+        {/* Additional Stats */}
+        {userStats && (
+          <View style={styles.sectionContainer}>
+            <Text style={styles.sectionTitle}>Resumo do Mês</Text>
+            <View style={styles.monthlyStatsCard}>
+              <View style={styles.monthlyStatItem}>
+                <Text style={styles.monthlyStatValue}>
+                  R${" "}
+                  {statsService.formatCurrencyValue(
+                    userStats.currentMonthSpent
+                  )}
+                </Text>
+                <Text style={styles.monthlyStatLabel}>Gasto no Mês</Text>
+              </View>
+              <View style={styles.monthlyStatItem}>
+                <Text style={styles.monthlyStatValue}>
+                  R${" "}
+                  {statsService.formatCurrencyValue(
+                    userStats.averageInvoiceValue
+                  )}
+                </Text>
+                <Text style={styles.monthlyStatLabel}>Ticket Médio</Text>
+              </View>
+              <View style={styles.monthlyStatItem}>
+                <Text style={styles.monthlyStatValue}>
+                  {userStats.mostShoppedStore}
+                </Text>
+                <Text style={styles.monthlyStatLabel}>Loja Favorita</Text>
+              </View>
+            </View>
+          </View>
+        )}
 
         {/* Quick Actions */}
         <View style={styles.sectionContainer}>
@@ -333,5 +384,36 @@ const styles = StyleSheet.create({
   activitySubtitle: {
     fontSize: 12,
     color: "#6B7280",
+  },
+  monthlyStatsCard: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 12,
+    padding: 16,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 1,
+    flexDirection: "row",
+    justifyContent: "space-around",
+  },
+  monthlyStatItem: {
+    alignItems: "center",
+    flex: 1,
+  },
+  monthlyStatValue: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#1F2937",
+    marginBottom: 4,
+    textAlign: "center",
+  },
+  monthlyStatLabel: {
+    fontSize: 12,
+    color: "#6B7280",
+    textAlign: "center",
   },
 });

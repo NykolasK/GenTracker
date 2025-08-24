@@ -1,23 +1,37 @@
-"use client"
+"use client";
 
-import { Ionicons } from "@expo/vector-icons"
-import { router, useLocalSearchParams } from "expo-router"
-import { useEffect, useState } from "react"
-import { Alert, ScrollView, StyleSheet, Text, View } from "react-native"
-import ActionButton from "../components/ui/ActionButton"
-import DiscountIndicator from "../components/ui/DiscountIndicator"
-import ScreenContainer from "../components/ui/ScreenContainer"
-import { DateService } from "../services/dateService"
-import { firebaseService, type FirebaseInvoice } from "../services/firebaseService"
+import { Ionicons } from "@expo/vector-icons";
+import { router, useLocalSearchParams } from "expo-router";
+import { useCallback, useEffect, useState } from "react";
+import {
+  Alert,
+  Modal,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import ActionButton from "../components/ui/ActionButton";
+import Button from "../components/ui/Button";
+import DiscountIndicator from "../components/ui/DiscountIndicator";
+import ScreenContainer from "../components/ui/ScreenContainer";
+import { DateService } from "../services/dateService";
+import {
+  firebaseService,
+  type FirebaseInvoice,
+} from "../services/firebaseService";
+import { ResponsiveUtils } from "../utils/responsiveUtils";
 
 interface ProductItemProps {
-  item: any
-  index: number
+  item: any;
+  index: number;
 }
 
 function ProductItem({ item, index }: ProductItemProps) {
   const getCategoryColor = (category: string) => {
-    const colors = {
+    const colors: Record<string, string> = {
       Alimentação: "#27AE60",
       Bebidas: "#3498DB",
       Limpeza: "#9B59B6",
@@ -33,9 +47,9 @@ function ProductItem({ item, index }: ProductItemProps) {
       Automotivo: "#424242",
       Jardinagem: "#8BC34A",
       Outros: "#9E9E9E",
-    }
-    return colors[category] || colors["Outros"]
-  }
+    };
+    return colors[category] || colors["Outros"];
+  };
 
   return (
     <View style={styles.productItem}>
@@ -43,18 +57,27 @@ function ProductItem({ item, index }: ProductItemProps) {
         <View style={styles.productInfo}>
           <Text style={styles.productName}>{item.name}</Text>
           {/* FIXED: Changed from && to ternary operator */}
-          {item.code ? <Text style={styles.productCode}>Código: {item.code}</Text> : null}
+          {item.code ? (
+            <Text style={styles.productCode}>Código: {item.code}</Text>
+          ) : null}
         </View>
         <View
           style={[
             styles.productCategory,
             {
-              backgroundColor: `${getCategoryColor(item.category || "Outros")}15`,
+              backgroundColor: `${getCategoryColor(
+                item.category || "Outros"
+              )}15`,
               borderColor: getCategoryColor(item.category || "Outros"),
             },
           ]}
         >
-          <Text style={[styles.categoryText, { color: getCategoryColor(item.category || "Outros") }]}>
+          <Text
+            style={[
+              styles.categoryText,
+              { color: getCategoryColor(item.category || "Outros") },
+            ]}
+          >
             {item.category || "Outros"}
           </Text>
         </View>
@@ -70,7 +93,9 @@ function ProductItem({ item, index }: ProductItemProps) {
 
         <View style={styles.productDetailRow}>
           <Text style={styles.detailLabel}>Preço unitário:</Text>
-          <Text style={styles.detailValue}>{firebaseService.formatCurrency(item.unit_price)}</Text>
+          <Text style={styles.detailValue}>
+            {firebaseService.formatCurrency(item.unit_price)}
+          </Text>
         </View>
 
         <View style={styles.productDetailRow}>
@@ -81,35 +106,95 @@ function ProductItem({ item, index }: ProductItemProps) {
         </View>
       </View>
     </View>
-  )
+  );
 }
 
 export default function InvoiceDetailsScreen() {
-  const { invoiceId } = useLocalSearchParams<{ invoiceId: string }>()
-  const [invoice, setInvoice] = useState<FirebaseInvoice | null>(null)
-  const [loading, setLoading] = useState(true)
+  const { invoiceId } = useLocalSearchParams<{ invoiceId: string }>();
+  const [invoice, setInvoice] = useState<FirebaseInvoice | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [showDateModal, setShowDateModal] = useState(false);
+  const [tempDate, setTempDate] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  const loadInvoice = useCallback(async () => {
+    try {
+      setLoading(true);
+      const invoiceData = await firebaseService.getInvoiceById(invoiceId);
+      setInvoice(invoiceData);
+    } catch (error) {
+      console.error("Error loading invoice:", error);
+      Alert.alert(
+        "Erro",
+        "Não foi possível carregar os detalhes da nota fiscal"
+      );
+    } finally {
+      setLoading(false);
+    }
+  }, [invoiceId]);
 
   useEffect(() => {
     if (invoiceId) {
-      loadInvoice()
+      loadInvoice();
     }
-  }, [invoiceId])
+  }, [invoiceId, loadInvoice]);
 
-  const loadInvoice = async () => {
-    try {
-      setLoading(true)
-      const invoiceData = await firebaseService.getInvoiceById(invoiceId)
-      setInvoice(invoiceData)
-    } catch (error) {
-      console.error("Error loading invoice:", error)
-      Alert.alert("Erro", "Não foi possível carregar os detalhes da nota fiscal")
-    } finally {
-      setLoading(false)
+  const handleEditDate = () => {
+    if (!invoice) return;
+
+    const currentDate = DateService.formatForInput(invoice.invoice_date);
+    setTempDate(currentDate);
+    setShowDateModal(true);
+  };
+
+  const handleSaveDate = async () => {
+    if (!invoice || !tempDate.trim()) return;
+
+    // Validar formato da data (DD/MM/YYYY)
+    const dateRegex = /^(\d{2})\/(\d{2})\/(\d{4})$/;
+    const match = tempDate.match(dateRegex);
+
+    if (!match) {
+      Alert.alert("Erro", "Data deve estar no formato DD/MM/AAAA");
+      return;
     }
-  }
+
+    const [, day, month, year] = match;
+    const newDate = new Date(
+      parseInt(year),
+      parseInt(month) - 1,
+      parseInt(day)
+    );
+
+    if (
+      newDate.getDate() !== parseInt(day) ||
+      newDate.getMonth() !== parseInt(month) - 1 ||
+      newDate.getFullYear() !== parseInt(year)
+    ) {
+      Alert.alert("Erro", "Data inválida");
+      return;
+    }
+
+    setSaving(true);
+
+    try {
+      await firebaseService.updateInvoiceDate(invoiceId, newDate);
+
+      // Atualizar o estado local
+      setInvoice({ ...invoice, invoice_date: newDate });
+      setShowDateModal(false);
+      setTempDate("");
+
+      Alert.alert("Sucesso", "Data atualizada com sucesso!");
+    } catch {
+      Alert.alert("Erro", "Não foi possível atualizar a data");
+    } finally {
+      setSaving(false);
+    }
+  };
 
   const handleDelete = async () => {
-    if (!invoice) return
+    if (!invoice) return;
 
     Alert.alert(
       "Confirmar Exclusão",
@@ -124,21 +209,21 @@ export default function InvoiceDetailsScreen() {
           style: "destructive",
           onPress: async () => {
             try {
-              await firebaseService.deleteInvoice(invoice.id!)
+              await firebaseService.deleteInvoice(invoice.id!);
               Alert.alert("Sucesso", "Nota fiscal excluída com sucesso!", [
                 {
                   text: "OK",
                   onPress: () => router.back(),
                 },
-              ])
-            } catch (error) {
-              Alert.alert("Erro", "Não foi possível excluir a nota fiscal")
+              ]);
+            } catch {
+              Alert.alert("Erro", "Não foi possível excluir a nota fiscal");
             }
           },
         },
-      ],
-    )
-  }
+      ]
+    );
+  };
 
   if (loading) {
     return (
@@ -147,7 +232,7 @@ export default function InvoiceDetailsScreen() {
           <Text style={styles.loadingText}>Carregando detalhes...</Text>
         </View>
       </ScreenContainer>
-    )
+    );
   }
 
   if (!invoice) {
@@ -156,7 +241,9 @@ export default function InvoiceDetailsScreen() {
         <View style={styles.errorContainer}>
           <Ionicons name="document-outline" size={64} color="#9CA3AF" />
           <Text style={styles.errorTitle}>Nota fiscal não encontrada</Text>
-          <Text style={styles.errorText}>A nota fiscal solicitada não foi encontrada ou foi removida.</Text>
+          <Text style={styles.errorText}>
+            A nota fiscal solicitada não foi encontrada ou foi removida.
+          </Text>
           <ActionButton
             title="Voltar"
             onPress={async () => router.back()}
@@ -165,21 +252,28 @@ export default function InvoiceDetailsScreen() {
           />
         </View>
       </ScreenContainer>
-    )
+    );
   }
 
   return (
     <ScreenContainer>
-      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        style={styles.scrollView}
+        showsVerticalScrollIndicator={false}
+      >
         {/* Store Information */}
         <View style={styles.storeCard}>
           <View style={styles.cardHeader}>
             <View style={styles.storeInfo}>
               <Text style={styles.storeName}>{invoice.store_name}</Text>
-              <Text style={styles.invoiceNumber}>NF-e: {invoice.invoice_number}</Text>
+              <Text style={styles.invoiceNumber}>
+                NF-e: {invoice.invoice_number}
+              </Text>
             </View>
             <View style={styles.cardActions}>
-              <Text style={styles.amount}>{firebaseService.formatCurrency(invoice.total_amount)}</Text>
+              <Text style={styles.amount}>
+                {firebaseService.formatCurrency(invoice.total_amount)}
+              </Text>
             </View>
           </View>
 
@@ -236,7 +330,17 @@ export default function InvoiceDetailsScreen() {
 
             <View style={styles.invoiceDetailRow}>
               <Text style={styles.detailLabel}>Data de Emissão:</Text>
-              <Text style={styles.detailValue}>{DateService.formatForDisplay(invoice.invoice_date, false)}</Text>
+              <View style={styles.editableDateContainer}>
+                <Text style={styles.detailValue}>
+                  {DateService.formatForDisplay(invoice.invoice_date, false)}
+                </Text>
+                <TouchableOpacity
+                  style={styles.editDateButton}
+                  onPress={handleEditDate}
+                >
+                  <Ionicons name="pencil" size={16} color="#3498DB" />
+                </TouchableOpacity>
+              </View>
             </View>
 
             <View style={styles.invoiceDetailRow}>
@@ -281,7 +385,9 @@ export default function InvoiceDetailsScreen() {
             <View style={styles.summaryRow}>
               <Text style={styles.summaryLabel}>Subtotal:</Text>
               <Text style={styles.summaryValue}>
-                {firebaseService.formatCurrency(invoice.total_amount - (invoice.taxes || 0))}
+                {firebaseService.formatCurrency(
+                  invoice.total_amount - (invoice.taxes || 0)
+                )}
               </Text>
             </View>
 
@@ -289,13 +395,17 @@ export default function InvoiceDetailsScreen() {
             {invoice.taxes && invoice.taxes > 0 ? (
               <View style={styles.summaryRow}>
                 <Text style={styles.summaryLabel}>Impostos:</Text>
-                <Text style={styles.summaryValue}>{firebaseService.formatCurrency(invoice.taxes)}</Text>
+                <Text style={styles.summaryValue}>
+                  {firebaseService.formatCurrency(invoice.taxes)}
+                </Text>
               </View>
             ) : null}
 
             <View style={styles.totalRow}>
               <Text style={styles.totalLabel}>Total:</Text>
-              <Text style={styles.totalValue}>{firebaseService.formatCurrency(invoice.total_amount)}</Text>
+              <Text style={styles.totalValue}>
+                {firebaseService.formatCurrency(invoice.total_amount)}
+              </Text>
             </View>
           </View>
         </View>
@@ -303,10 +413,14 @@ export default function InvoiceDetailsScreen() {
         {/* Products List */}
         <View style={styles.productsCard}>
           <View style={styles.productsHeader}>
-            <Text style={styles.cardTitle}>Produtos ({invoice.items.length})</Text>
+            <Text style={styles.cardTitle}>
+              Produtos ({invoice.items.length})
+            </Text>
             <View style={styles.itemsCount}>
               <Ionicons name="basket" size={16} color="#3498DB" />
-              <Text style={styles.itemsCountText}>{invoice.items.length} itens</Text>
+              <Text style={styles.itemsCountText}>
+                {invoice.items.length} itens
+              </Text>
             </View>
           </View>
 
@@ -330,8 +444,57 @@ export default function InvoiceDetailsScreen() {
           />
         </View>
       </ScrollView>
+
+      {/* Modal para editar data */}
+      <Modal
+        visible={showDateModal}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setShowDateModal(false)}
+      >
+        <TouchableOpacity
+          style={styles.modalOverlay}
+          activeOpacity={1}
+          onPress={() => setShowDateModal(false)}
+        >
+          <TouchableOpacity
+            style={styles.modalContent}
+            activeOpacity={1}
+            onPress={() => {}}
+          >
+            <Text style={styles.modalTitle}>Editar Data de Emissão</Text>
+
+            <View style={styles.modalInputContainer}>
+              <Text style={styles.modalInputLabel}>Data (DD/MM/AAAA)</Text>
+              <TextInput
+                style={styles.modalInput}
+                value={tempDate}
+                onChangeText={setTempDate}
+                placeholder="DD/MM/AAAA"
+                keyboardType="numeric"
+                maxLength={10}
+              />
+            </View>
+
+            <View style={styles.modalActions}>
+              <Button
+                title="Cancelar"
+                onPress={() => setShowDateModal(false)}
+                variant="secondary"
+                style={styles.modalButton}
+              />
+              <Button
+                title={saving ? "Salvando..." : "Salvar"}
+                onPress={handleSaveDate}
+                style={styles.modalButton}
+                disabled={saving}
+              />
+            </View>
+          </TouchableOpacity>
+        </TouchableOpacity>
+      </Modal>
     </ScreenContainer>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -436,10 +599,10 @@ const styles = StyleSheet.create({
   },
   invoiceCard: {
     backgroundColor: "#FFFFFF",
-    marginHorizontal: 20,
-    marginBottom: 12,
-    borderRadius: 16,
-    padding: 20,
+    marginHorizontal: ResponsiveUtils.getHorizontalPadding(),
+    marginBottom: ResponsiveUtils.getSpacing().md,
+    borderRadius: ResponsiveUtils.isSmallDevice ? 12 : 16,
+    padding: ResponsiveUtils.getCardPadding(),
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
@@ -450,31 +613,34 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   cardTitle: {
-    fontSize: 16,
+    fontSize: ResponsiveUtils.getFontSizes().large,
     fontWeight: "600",
     color: "#1F2937",
-    marginBottom: 16,
+    marginBottom: ResponsiveUtils.getSpacing().lg,
   },
   invoiceDetails: {
-    gap: 12,
+    gap: 4, // Reduzir ainda mais o espaçamento entre as linhas de informações da NF
   },
   invoiceDetailRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "flex-start",
+    marginBottom: ResponsiveUtils.getSpacing().xs, // Espaçamento responsivo consistente
   },
   detailLabel: {
-    fontSize: 14,
+    fontSize: ResponsiveUtils.getFontSizes().medium,
     color: "#6B7280",
     fontWeight: "500",
     flex: 1,
+    flexShrink: 1, // Permite quebra de texto
   },
   detailValue: {
-    fontSize: 14,
+    fontSize: ResponsiveUtils.getFontSizes().medium,
     color: "#1F2937",
     fontWeight: "500",
     flex: 2,
     textAlign: "right",
+    flexShrink: 1, // Permite quebra de texto
   },
   scannedDate: {
     color: "#3498DB",
@@ -634,4 +800,63 @@ const styles = StyleSheet.create({
     elevation: 2,
     gap: 12,
   },
-})
+  editableDateContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  editDateButton: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: "#EBF8FF",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+  },
+  modalContent: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 16,
+    padding: 24,
+    width: "100%",
+    maxWidth: 350,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#1F2937",
+    marginBottom: 20,
+    textAlign: "center",
+  },
+  modalInputContainer: {
+    marginBottom: 24,
+  },
+  modalInputLabel: {
+    fontSize: 14,
+    fontWeight: "500",
+    color: "#374151",
+    marginBottom: 8,
+  },
+  modalInput: {
+    borderWidth: 1,
+    borderColor: "#D1D5DB",
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    fontSize: 16,
+    color: "#1F2937",
+  },
+  modalActions: {
+    flexDirection: "row",
+    gap: 12,
+  },
+  modalButton: {
+    flex: 1,
+  },
+});

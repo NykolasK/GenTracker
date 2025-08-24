@@ -1,7 +1,8 @@
 import { router } from "expo-router";
-import { SafeAreaView, StatusBar, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import Button from "../../components/ui/Button";
 import Logo from "../../components/ui/Logo";
+import ScreenContainer from "../../components/ui/ScreenContainer";
 
 export default function StartScreen() {
   const handleLogin = () => {
@@ -13,13 +14,12 @@ export default function StartScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar
-        barStyle="dark-content"
-        backgroundColor="#F8F9FA"
-        translucent={false}
-      />
-
+    <ScreenContainer
+      backgroundColor="#F8F9FA"
+      statusBarStyle="dark-content"
+      statusBarTranslucent={true}
+      edges={["top", "right", "left"]}
+    >
       <View style={styles.content}>
         <View style={styles.logoContainer}>
           <Logo size="large" />
@@ -38,7 +38,7 @@ export default function StartScreen() {
           />
         </View>
       </View>
-    </SafeAreaView>
+    </ScreenContainer>
   );
 }
 

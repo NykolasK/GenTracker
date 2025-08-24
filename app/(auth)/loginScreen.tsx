@@ -5,9 +5,7 @@ import { router } from "expo-router";
 import { useState } from "react";
 import {
   Alert,
-  SafeAreaView,
   ScrollView,
-  StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -18,6 +16,7 @@ import Divider from "../../components/ui/Divider";
 import Input from "../../components/ui/Input";
 import LinkText from "../../components/ui/LinkText";
 import Logo from "../../components/ui/Logo";
+import ScreenContainer from "../../components/ui/ScreenContainer";
 import { signIn } from "../../services/authService";
 
 export default function LoginScreen() {
@@ -59,11 +58,10 @@ export default function LoginScreen() {
       const result = await signIn(formData.email.trim(), formData.senha);
 
       if (result.success) {
-        Alert.alert("Sucesso", result.message, [
-          { text: "OK", onPress: () => router.replace("/(tabs)/homeScreen") },
-        ]);
+        // Navigate directly without showing alert for better UX
+        router.replace("/(tabs)/homeScreen");
       } else {
-        Alert.alert("Erro de Login", result.error);
+        Alert.alert("Erro de Login", result.error || "Falha ao fazer login");
       }
     } catch {
       Alert.alert("Erro", "Ocorreu um erro inesperado. Tente novamente.");
@@ -92,9 +90,12 @@ export default function LoginScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
-
+    <ScreenContainer
+      backgroundColor="#FFFFFF"
+      statusBarStyle="dark-content"
+      statusBarTranslucent={true}
+      edges={["top", "right", "left"]}
+    >
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
@@ -166,7 +167,7 @@ export default function LoginScreen() {
           />
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </ScreenContainer>
   );
 }
 
