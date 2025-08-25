@@ -343,6 +343,9 @@ export default function InvoiceDetailsScreen() {
               </View>
             </View>
 
+            {/* Adicionar espaçamento visual entre data de emissão e escaneamento */}
+            <View style={styles.dateSeparator} />
+
             <View style={styles.invoiceDetailRow}>
               <Text style={styles.detailLabel}>Escaneada em:</Text>
               <Text style={[styles.detailValue, styles.scannedDate]}>
@@ -625,7 +628,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "flex-start",
-    marginBottom: ResponsiveUtils.getSpacing().xs, // Espaçamento responsivo consistente
+    marginBottom: ResponsiveUtils.getSpacing().sm, // Espaçamento responsivo mais consistente
+    minHeight: 24, // Garantir altura mínima para toque
   },
   detailLabel: {
     fontSize: ResponsiveUtils.getFontSizes().medium,
@@ -648,6 +652,9 @@ const styles = StyleSheet.create({
   relativeTime: {
     color: "#27AE60",
     fontStyle: "italic",
+  },
+  dateSeparator: {
+    height: 8, // Pequeno espaçamento visual entre seções
   },
   summaryCard: {
     backgroundColor: "#FFFFFF",
@@ -803,15 +810,18 @@ const styles = StyleSheet.create({
   editableDateContainer: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+    gap: 12, // Aumentar o espaçamento para melhor visual
+    flex: 1, // Permitir que use o espaço disponível
+    justifyContent: "flex-end", // Alinhar à direita como outros valores
   },
   editDateButton: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
+    width: 32, // Slightly larger for better touch target
+    height: 32,
+    borderRadius: 16,
     backgroundColor: "#EBF8FF",
     justifyContent: "center",
     alignItems: "center",
+    marginLeft: 8, // Add space between date text and button
   },
   modalOverlay: {
     flex: 1,

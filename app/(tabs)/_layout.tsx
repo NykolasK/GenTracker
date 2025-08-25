@@ -21,7 +21,7 @@ export default function TabLayout() {
         tabBarStyle: {
           backgroundColor: "#FFFFFF",
           borderTopWidth: 0,
-          height: isSmallScreen ? 80 : 90, // Altura menor em telas pequenas
+          height: isSmallScreen ? 80 : 90,
           paddingBottom: isSmallScreen ? 20 : 25,
           paddingTop: isSmallScreen ? 10 : 15,
           shadowColor: "#000",

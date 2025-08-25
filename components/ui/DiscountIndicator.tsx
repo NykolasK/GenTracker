@@ -1,12 +1,12 @@
-import { View, Text, StyleSheet } from "react-native"
-import { Ionicons } from "@expo/vector-icons"
+import { Ionicons } from "@expo/vector-icons";
+import { StyleSheet, Text, View } from "react-native";
 
 interface DiscountIndicatorProps {
-  amount: number
-  variant?: "badge" | "inline" | "card"
-  size?: "small" | "medium" | "large"
-  showPercentage?: boolean
-  originalAmount?: number
+  amount: number;
+  variant?: "badge" | "inline" | "card";
+  size?: "small" | "medium" | "large";
+  showPercentage?: boolean;
+  originalAmount?: number;
 }
 
 export default function DiscountIndicator({
@@ -20,41 +20,41 @@ export default function DiscountIndicator({
     return new Intl.NumberFormat("pt-BR", {
       style: "currency",
       currency: "BRL",
-    }).format(value)
-  }
+    }).format(value);
+  };
 
   const calculatePercentage = () => {
-    if (!originalAmount || originalAmount === 0) return 0
-    return Math.round((amount / originalAmount) * 100)
-  }
+    if (!originalAmount || originalAmount === 0) return 0;
+    return Math.round((amount / originalAmount) * 100);
+  };
 
   const getIconName = () => {
     switch (variant) {
       case "badge":
-        return "pricetag"
+        return "pricetag";
       case "inline":
-        return "trending-down"
+        return "trending-down";
       case "card":
-        return "gift"
+        return "gift";
       default:
-        return "pricetag"
+        return "pricetag";
     }
-  }
+  };
 
   const getStyles = () => {
-    const baseStyle = styles[variant]
-    const sizeStyle = styles[`${variant}_${size}`]
-    return [baseStyle, sizeStyle]
-  }
+    const baseStyle = styles[variant];
+    const sizeStyle = styles[`${variant}_${size}`];
+    return [baseStyle, sizeStyle];
+  };
 
   const getTextStyles = () => {
-    const baseStyle = styles[`${variant}Text`]
-    const sizeStyle = styles[`${variant}Text_${size}`]
-    return [baseStyle, sizeStyle]
-  }
+    const baseStyle = styles[`${variant}Text`];
+    const sizeStyle = styles[`${variant}Text_${size}`];
+    return [baseStyle, sizeStyle];
+  };
 
   const renderContent = () => {
-    const percentage = showPercentage ? calculatePercentage() : null
+    const percentage = showPercentage ? calculatePercentage() : null;
 
     return (
       <>
@@ -69,12 +69,12 @@ export default function DiscountIndicator({
           {percentage && percentage > 0 ? ` (${percentage}%)` : ""}
         </Text>
       </>
-    )
-  }
+    );
+  };
 
-  if (amount <= 0) return null
+  if (amount <= 0) return null;
 
-  return <View style={getStyles()}>{renderContent()}</View>
+  return <View style={getStyles()}>{renderContent()}</View>;
 }
 
 const styles = StyleSheet.create({
@@ -186,4 +186,4 @@ const styles = StyleSheet.create({
   cardText_large: {
     fontSize: 14,
   },
-})
+});

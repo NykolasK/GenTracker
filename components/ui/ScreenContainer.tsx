@@ -19,7 +19,7 @@ interface ScreenContainerProps {
 
 export default function ScreenContainer({
   children,
-  backgroundColor = "#F8F9FA",
+  backgroundColor = "#F8f9FA",
   statusBarStyle = "dark-content",
   style,
   edges,
@@ -67,5 +67,6 @@ export default function ScreenContainer({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    marginBottom: -30,
   },
 });

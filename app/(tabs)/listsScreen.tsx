@@ -997,7 +997,13 @@ export default function ListsScreen() {
               >
                 <Ionicons name="close" size={24} color="#6B7280" />
               </TouchableOpacity>
-              <Text style={styles.modalTitle}>{selectedList?.name}</Text>
+              <Text
+                style={styles.modalTitle}
+                numberOfLines={2}
+                ellipsizeMode="tail"
+              >
+                {selectedList?.name}
+              </Text>
               <View style={styles.viewModalActions}>
                 <TouchableOpacity
                   onPress={() => handleEditList(selectedList!)}
@@ -1463,16 +1469,20 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "flex-start",
     marginBottom: 12,
+    minHeight: 44, // Garantir altura mínima
   },
   listInfo: {
     flex: 1,
     marginRight: 12,
+    minWidth: 0, // Permitir quebra de texto
   },
   listName: {
     fontSize: 16,
     fontWeight: "600",
     color: "#1F2937",
     marginBottom: 4,
+    flexShrink: 1, // Permitir que o texto se ajuste
+    flexWrap: "wrap", // Permitir quebra de linha
   },
   listDescription: {
     fontSize: 14,
@@ -1483,6 +1493,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 12,
+    flexShrink: 0, // Evitar que o badge seja comprimido
+    minWidth: 60, // Garantir largura mínima
+    alignItems: "center", // Centralizar texto
   },
   statusText: {
     fontSize: 12,
@@ -1557,6 +1570,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     borderBottomWidth: 1,
     borderBottomColor: "#E5E7EB",
+    minHeight: 80, // Garantir altura mínima
   },
   modalCloseButton: {
     width: 40,
@@ -1570,6 +1584,9 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     color: "#1F2937",
+    flex: 1, // Permitir que o título use o espaço disponível
+    textAlign: "center",
+    marginHorizontal: 16, // Espaçamento das bordas
   },
   modalSaveButton: {
     backgroundColor: "#3498DB",
@@ -1722,6 +1739,8 @@ const styles = StyleSheet.create({
   viewModalActions: {
     flexDirection: "row",
     gap: 8,
+    flexShrink: 0, // Evitar que os botões sejam comprimidos
+    minWidth: 80, // Garantir largura mínima para os botões
   },
   editButton: {
     width: 36,

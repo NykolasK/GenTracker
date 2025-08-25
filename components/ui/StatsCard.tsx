@@ -1,12 +1,12 @@
-import { View, Text, StyleSheet } from "react-native"
+import { StyleSheet, Text, View } from "react-native";
 
 interface StatItemProps {
-  number: string | number
-  label: string
+  number: string | number;
+  label: string;
 }
 
 interface StatsCardProps {
-  stats: StatItemProps[]
+  stats: StatItemProps[];
 }
 
 export default function StatsCard({ stats }: StatsCardProps) {
@@ -22,7 +22,7 @@ export default function StatsCard({ stats }: StatsCardProps) {
         </View>
       ))}
     </View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -69,4 +69,4 @@ const styles = StyleSheet.create({
     backgroundColor: "#E5E7EB",
     marginLeft: 10,
   },
-})
+});

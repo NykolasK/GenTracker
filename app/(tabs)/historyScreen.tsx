@@ -158,7 +158,7 @@ export default function HistoryScreen() {
 
   const handleInvoicePress = (invoice: FirebaseInvoice) => {
     router.push({
-      pathname: "/invoice-details",
+      pathname: "../invoice-details",
       params: { invoiceId: invoice.id },
     });
   };

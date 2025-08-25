@@ -1,24 +1,34 @@
-import { TouchableOpacity, View, Text, StyleSheet } from "react-native"
-import { Ionicons } from "@expo/vector-icons"
+import { Ionicons } from "@expo/vector-icons";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 interface QuickActionCardProps {
-  title: string
-  subtitle: string
-  icon: string
-  color: string
-  onPress: () => void
+  title: string;
+  subtitle: string;
+  icon: string;
+  color: string;
+  onPress: () => void;
 }
 
-export default function QuickActionCard({ title, subtitle, icon, color, onPress }: QuickActionCardProps) {
+export default function QuickActionCard({
+  title,
+  subtitle,
+  icon,
+  color,
+  onPress,
+}: QuickActionCardProps) {
   return (
-    <TouchableOpacity style={styles.actionCard} onPress={onPress} activeOpacity={0.7}>
+    <TouchableOpacity
+      style={styles.actionCard}
+      onPress={onPress}
+      activeOpacity={0.7}
+    >
       <View style={[styles.actionIcon, { backgroundColor: `${color}15` }]}>
         <Ionicons name={icon as any} size={24} color={color} />
       </View>
       <Text style={styles.actionTitle}>{title}</Text>
       <Text style={styles.actionSubtitle}>{subtitle}</Text>
     </TouchableOpacity>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -58,4 +68,4 @@ const styles = StyleSheet.create({
     textAlign: "center",
     lineHeight: 16,
   },
-})
+});

@@ -1,21 +1,26 @@
-import { View, Text, StyleSheet } from "react-native"
-import { Ionicons } from "@expo/vector-icons"
+import { Ionicons } from "@expo/vector-icons";
+import { StyleSheet, Text, View } from "react-native";
 
 interface EmptyStateProps {
-  icon: string
-  title: string
-  subtitle: string
-  size?: number
+  icon: string;
+  title: string;
+  subtitle: string;
+  size?: number;
 }
 
-export default function EmptyState({ icon, title, subtitle, size = 64 }: EmptyStateProps) {
+export default function EmptyState({
+  icon,
+  title,
+  subtitle,
+  size = 64,
+}: EmptyStateProps) {
   return (
     <View style={styles.emptyState}>
       <Ionicons name={icon as any} size={size} color="#9CA3AF" />
       <Text style={styles.emptyTitle}>{title}</Text>
       <Text style={styles.emptySubtitle}>{subtitle}</Text>
     </View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -38,4 +43,4 @@ const styles = StyleSheet.create({
     textAlign: "center",
     lineHeight: 20,
   },
-})
+});

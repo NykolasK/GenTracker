@@ -1,63 +1,85 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { View, Text, StyleSheet, Modal, TouchableOpacity, ScrollView, TextInput } from "react-native"
-import { Ionicons } from "@expo/vector-icons"
-import DateTimePicker from "@react-native-community/datetimepicker"
-import Button from "./Button"
-import { firebaseService, type InvoiceFilters } from "../../services/firebaseService"
+import { Ionicons } from "@expo/vector-icons";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import { useEffect, useState } from "react";
+import {
+  Modal,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import {
+  firebaseService,
+  type InvoiceFilters,
+} from "../../services/firebaseService";
+import Button from "./Button";
 
 interface InvoiceFiltersModalProps {
-  visible: boolean
-  filters: InvoiceFilters
-  onApply: (filters: InvoiceFilters) => void
-  onClose: () => void
-  onClear: () => void
+  visible: boolean;
+  filters: InvoiceFilters;
+  onApply: (filters: InvoiceFilters) => void;
+  onClose: () => void;
+  onClear: () => void;
 }
 
-export default function InvoiceFiltersModal({ visible, filters, onApply, onClose, onClear }: InvoiceFiltersModalProps) {
-  const [localFilters, setLocalFilters] = useState<InvoiceFilters>(filters)
-  const [showDateFromPicker, setShowDateFromPicker] = useState(false)
-  const [showDateToPicker, setShowDateToPicker] = useState(false)
+export default function InvoiceFiltersModal({
+  visible,
+  filters,
+  onApply,
+  onClose,
+  onClear,
+}: InvoiceFiltersModalProps) {
+  const [localFilters, setLocalFilters] = useState<InvoiceFilters>(filters);
+  const [showDateFromPicker, setShowDateFromPicker] = useState(false);
+  const [showDateToPicker, setShowDateToPicker] = useState(false);
 
   useEffect(() => {
-    setLocalFilters(filters)
-  }, [filters])
+    setLocalFilters(filters);
+  }, [filters]);
 
   const handleApply = () => {
-    onApply(localFilters)
-  }
+    onApply(localFilters);
+  };
 
   const handleClear = () => {
     setLocalFilters({
       sortBy: "scanned_at",
       sortOrder: "desc",
-    })
-    onClear()
-  }
+    });
+    onClear();
+  };
 
   const updateFilter = (key: keyof InvoiceFilters, value: any) => {
     setLocalFilters((prev) => ({
       ...prev,
       [key]: value,
-    }))
-  }
+    }));
+  };
 
   const formatCurrencyInput = (value: string) => {
     // Remove non-numeric characters except comma and dot
-    const numericValue = value.replace(/[^\d,.]/g, "")
-    return numericValue
-  }
+    const numericValue = value.replace(/[^\d,.]/g, "");
+    return numericValue;
+  };
 
   const parseCurrencyInput = (value: string): number | undefined => {
-    if (!value) return undefined
+    if (!value) return undefined;
     // Replace comma with dot and parse as float
-    const numericValue = Number.parseFloat(value.replace(",", "."))
-    return isNaN(numericValue) ? undefined : numericValue
-  }
+    const numericValue = Number.parseFloat(value.replace(",", "."));
+    return isNaN(numericValue) ? undefined : numericValue;
+  };
 
   return (
-    <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}>
+    <Modal
+      visible={visible}
+      animationType="slide"
+      presentationStyle="pageSheet"
+      onRequestClose={onClose}
+    >
       <View style={styles.container}>
         {/* Header */}
         <View style={styles.header}>
@@ -78,9 +100,14 @@ export default function InvoiceFiltersModal({ visible, filters, onApply, onClose
             <View style={styles.dateRow}>
               <View style={styles.dateField}>
                 <Text style={styles.fieldLabel}>Data Inicial</Text>
-                <TouchableOpacity style={styles.dateButton} onPress={() => setShowDateFromPicker(true)}>
+                <TouchableOpacity
+                  style={styles.dateButton}
+                  onPress={() => setShowDateFromPicker(true)}
+                >
                   <Text style={styles.dateButtonText}>
-                    {localFilters.dateFrom ? firebaseService.formatDate(localFilters.dateFrom) : "Selecionar"}
+                    {localFilters.dateFrom
+                      ? firebaseService.formatDate(localFilters.dateFrom)
+                      : "Selecionar"}
                   </Text>
                   <Ionicons name="calendar-outline" size={20} color="#6B7280" />
                 </TouchableOpacity>
@@ -88,9 +115,14 @@ export default function InvoiceFiltersModal({ visible, filters, onApply, onClose
 
               <View style={styles.dateField}>
                 <Text style={styles.fieldLabel}>Data Final</Text>
-                <TouchableOpacity style={styles.dateButton} onPress={() => setShowDateToPicker(true)}>
+                <TouchableOpacity
+                  style={styles.dateButton}
+                  onPress={() => setShowDateToPicker(true)}
+                >
                   <Text style={styles.dateButtonText}>
-                    {localFilters.dateTo ? firebaseService.formatDate(localFilters.dateTo) : "Selecionar"}
+                    {localFilters.dateTo
+                      ? firebaseService.formatDate(localFilters.dateTo)
+                      : "Selecionar"}
                   </Text>
                   <Ionicons name="calendar-outline" size={20} color="#6B7280" />
                 </TouchableOpacity>
@@ -108,10 +140,12 @@ export default function InvoiceFiltersModal({ visible, filters, onApply, onClose
                 <TextInput
                   style={styles.input}
                   placeholder="R$ 0,00"
-                  value={localFilters.minAmount?.toString().replace(".", ",") || ""}
+                  value={
+                    localFilters.minAmount?.toString().replace(".", ",") || ""
+                  }
                   onChangeText={(text) => {
-                    const formatted = formatCurrencyInput(text)
-                    updateFilter("minAmount", parseCurrencyInput(formatted))
+                    const formatted = formatCurrencyInput(text);
+                    updateFilter("minAmount", parseCurrencyInput(formatted));
                   }}
                   keyboardType="numeric"
                 />
@@ -122,10 +156,12 @@ export default function InvoiceFiltersModal({ visible, filters, onApply, onClose
                 <TextInput
                   style={styles.input}
                   placeholder="R$ 999,99"
-                  value={localFilters.maxAmount?.toString().replace(".", ",") || ""}
+                  value={
+                    localFilters.maxAmount?.toString().replace(".", ",") || ""
+                  }
                   onChangeText={(text) => {
-                    const formatted = formatCurrencyInput(text)
-                    updateFilter("maxAmount", parseCurrencyInput(formatted))
+                    const formatted = formatCurrencyInput(text);
+                    updateFilter("maxAmount", parseCurrencyInput(formatted));
                   }}
                   keyboardType="numeric"
                 />
@@ -145,8 +181,8 @@ export default function InvoiceFiltersModal({ visible, filters, onApply, onClose
                   placeholder="1"
                   value={localFilters.minItems?.toString() || ""}
                   onChangeText={(text) => {
-                    const value = Number.parseInt(text) || undefined
-                    updateFilter("minItems", value)
+                    const value = Number.parseInt(text) || undefined;
+                    updateFilter("minItems", value);
                   }}
                   keyboardType="numeric"
                 />
@@ -159,8 +195,8 @@ export default function InvoiceFiltersModal({ visible, filters, onApply, onClose
                   placeholder="100"
                   value={localFilters.maxItems?.toString() || ""}
                   onChangeText={(text) => {
-                    const value = Number.parseInt(text) || undefined
-                    updateFilter("maxItems", value)
+                    const value = Number.parseInt(text) || undefined;
+                    updateFilter("maxItems", value);
                   }}
                   keyboardType="numeric"
                 />
@@ -175,7 +211,9 @@ export default function InvoiceFiltersModal({ visible, filters, onApply, onClose
               style={styles.input}
               placeholder="Digite o nome da loja"
               value={localFilters.storeName || ""}
-              onChangeText={(text) => updateFilter("storeName", text || undefined)}
+              onChangeText={(text) =>
+                updateFilter("storeName", text || undefined)
+              }
             />
           </View>
 
@@ -194,11 +232,19 @@ export default function InvoiceFiltersModal({ visible, filters, onApply, onClose
                 ].map((option) => (
                   <TouchableOpacity
                     key={option.key}
-                    style={[styles.sortOption, localFilters.sortBy === option.key && styles.sortOptionActive]}
+                    style={[
+                      styles.sortOption,
+                      localFilters.sortBy === option.key &&
+                        styles.sortOptionActive,
+                    ]}
                     onPress={() => updateFilter("sortBy", option.key)}
                   >
                     <Text
-                      style={[styles.sortOptionText, localFilters.sortBy === option.key && styles.sortOptionTextActive]}
+                      style={[
+                        styles.sortOptionText,
+                        localFilters.sortBy === option.key &&
+                          styles.sortOptionTextActive,
+                      ]}
                     >
                       {option.label}
                     </Text>
@@ -211,29 +257,53 @@ export default function InvoiceFiltersModal({ visible, filters, onApply, onClose
               <Text style={styles.fieldLabel}>Ordem:</Text>
               <View style={styles.sortOrderRow}>
                 <TouchableOpacity
-                  style={[styles.sortOrderOption, localFilters.sortOrder === "desc" && styles.sortOrderOptionActive]}
+                  style={[
+                    styles.sortOrderOption,
+                    localFilters.sortOrder === "desc" &&
+                      styles.sortOrderOptionActive,
+                  ]}
                   onPress={() => updateFilter("sortOrder", "desc")}
                 >
                   <Ionicons
                     name="arrow-down"
                     size={16}
-                    color={localFilters.sortOrder === "desc" ? "#FFFFFF" : "#6B7280"}
+                    color={
+                      localFilters.sortOrder === "desc" ? "#FFFFFF" : "#6B7280"
+                    }
                   />
-                  <Text style={[styles.sortOrderText, localFilters.sortOrder === "desc" && styles.sortOrderTextActive]}>
+                  <Text
+                    style={[
+                      styles.sortOrderText,
+                      localFilters.sortOrder === "desc" &&
+                        styles.sortOrderTextActive,
+                    ]}
+                  >
                     Decrescente
                   </Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                  style={[styles.sortOrderOption, localFilters.sortOrder === "asc" && styles.sortOrderOptionActive]}
+                  style={[
+                    styles.sortOrderOption,
+                    localFilters.sortOrder === "asc" &&
+                      styles.sortOrderOptionActive,
+                  ]}
                   onPress={() => updateFilter("sortOrder", "asc")}
                 >
                   <Ionicons
                     name="arrow-up"
                     size={16}
-                    color={localFilters.sortOrder === "asc" ? "#FFFFFF" : "#6B7280"}
+                    color={
+                      localFilters.sortOrder === "asc" ? "#FFFFFF" : "#6B7280"
+                    }
                   />
-                  <Text style={[styles.sortOrderText, localFilters.sortOrder === "asc" && styles.sortOrderTextActive]}>
+                  <Text
+                    style={[
+                      styles.sortOrderText,
+                      localFilters.sortOrder === "asc" &&
+                        styles.sortOrderTextActive,
+                    ]}
+                  >
                     Crescente
                   </Text>
                 </TouchableOpacity>
@@ -244,7 +314,11 @@ export default function InvoiceFiltersModal({ visible, filters, onApply, onClose
 
         {/* Footer */}
         <View style={styles.footer}>
-          <Button title="Aplicar Filtros" onPress={handleApply} variant="primary" />
+          <Button
+            title="Aplicar Filtros"
+            onPress={handleApply}
+            variant="primary"
+          />
         </View>
 
         {/* Date Pickers */}
@@ -254,9 +328,9 @@ export default function InvoiceFiltersModal({ visible, filters, onApply, onClose
             mode="date"
             display="default"
             onChange={(event, selectedDate) => {
-              setShowDateFromPicker(false)
+              setShowDateFromPicker(false);
               if (selectedDate) {
-                updateFilter("dateFrom", selectedDate)
+                updateFilter("dateFrom", selectedDate);
               }
             }}
           />
@@ -268,16 +342,16 @@ export default function InvoiceFiltersModal({ visible, filters, onApply, onClose
             mode="date"
             display="default"
             onChange={(event, selectedDate) => {
-              setShowDateToPicker(false)
+              setShowDateToPicker(false);
               if (selectedDate) {
-                updateFilter("dateTo", selectedDate)
+                updateFilter("dateTo", selectedDate);
               }
             }}
           />
         )}
       </View>
     </Modal>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -424,4 +498,4 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: "#E5E7EB",
   },
-})
+});
